@@ -271,16 +271,44 @@
             inset: 0;
             background: #050b14; /* Pitch black */
             z-index: 9999; /* Over absolutely everything */
-            pointer-events: none;
-            
-            /* Apply our keyframe animation */
-            animation: spotlightRevealSequence 3.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+            pointer-events: all; /* Intercept clicks initially */
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             
             /* Modern CSS masking for the single transparent spotlight circle */
             mask-image: radial-gradient(circle at var(--mask-x, 50%) var(--mask-y, 50%), transparent var(--mask-size, 100px), #000 calc(var(--mask-size, 100px) + 1px));
             -webkit-mask-image: radial-gradient(circle at var(--mask-x, 50%) var(--mask-y, 50%), transparent var(--mask-size, 100px), #000 calc(var(--mask-size, 100px) + 1px));
             mask-repeat: no-repeat;
             -webkit-mask-repeat: no-repeat;
+        }
+
+        .spotlight-mask-overlay.reveal {
+            pointer-events: none;
+            /* Apply our keyframe animation only when clicked */
+            animation: spotlightRevealSequence 3.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+        }
+
+        .start-prompt {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            font-family: 'Mitr', sans-serif;
+            z-index: 10000;
+            pointer-events: none; /* Let click pass to parent overlay */
+            animation: pulsePrompt 2s ease-in-out infinite;
+        }
+
+        .spotlight-mask-overlay.reveal .start-prompt {
+            opacity: 0;
+            transform: scale(0.9);
+            visibility: hidden;
+        }
+
+        @keyframes pulsePrompt {
+            0%, 100% { transform: scale(1); opacity: 0.95; }
+            50% { transform: scale(1.03); opacity: 0.6; }
         }
 
         @keyframes spotlightRevealSequence {
@@ -1152,7 +1180,13 @@
 <body>
 
     <!-- ===== PITCH BLACK SPOTLIGHT REVEAL OVERLAY ===== -->
-    <div class="spotlight-mask-overlay"></div>
+    <div class="spotlight-mask-overlay" id="spotlightOverlay" onclick="startSpotlightReveal()">
+        <div class="start-prompt" id="startPrompt">
+            <div style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 0 12px rgba(255,255,255,0.4));">🕵️</div>
+            <div style="font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 2px;">แตะหน้าจอเพื่อเริ่มภารกิจ</div>
+            <div style="font-size: 14px; color: #64748b; margin-top: 6px; font-weight: 400; letter-spacing: 1px;">TAP TO START MISSION</div>
+        </div>
+    </div>
 
     <!-- ===== PROGRESS BAR ===== -->
     <div class="progress-bar-track">
@@ -1676,6 +1710,14 @@
             const fb = document.getElementById('qr-canvas');
             fb.style.cssText = 'width:240px;height:240px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:15px;color:#64748b;text-align:center;padding:20px;';
             fb.textContent = 'QR Code (casefile.html)';
+        }
+
+        // ===== SPOTLIGHT REVEAL INTERACTIVE =====
+        function startSpotlightReveal() {
+            const overlay = document.getElementById('spotlightOverlay');
+            if (overlay && !overlay.classList.contains('reveal')) {
+                overlay.classList.add('reveal');
+            }
         }
 
         // ===== INIT =====
