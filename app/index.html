@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CS-Files: The Silent Mentor</title>
+    <!-- Google Fonts: Outfit (Headings) & Inter (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&family=Mitr:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <!-- Login / Group Selection Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="doodle-container">
+            <h1 class="game-title">CS-FILES</h1>
+            <p class="game-subtitle">The Silent Mentor</p>
+            
+            <div class="login-card doodle-card">
+                <h2>เข้าสู่ระบบสืบสวน</h2>
+                <p>เลือกหมายเลขกลุ่มของคุณ</p>
+                <div class="group-grid" id="group-grid">
+                    <!-- JS will populate groups 1-10 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="main-screen" class="screen">
+        <header class="app-header">
+            <div class="header-info">
+                <span id="display-group-num">Group: --</span>
+            </div>
+            <h1 class="header-title">CS-FILES</h1>
+            <button id="btn-logout" class="btn-icon">🚪</button>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" data-target="tab-mission">
+                <span class="nav-icon">🔓</span>
+                <span class="nav-text">Mission</span>
+            </button>
+            <button class="nav-btn" data-target="tab-qr">
+                <span class="nav-icon">🗺️</span>
+                <span class="nav-text">QR Hunt</span>
+            </button>
+            <button class="nav-btn" data-target="tab-interrogate">
+                <span class="nav-icon">🚨</span>
+                <span class="nav-text">จับโกหก</span>
+            </button>
+            <button class="nav-btn" data-target="tab-judgment">
+                <span class="nav-icon">⚖️</span>
+                <span class="nav-text">ศาล</span>
+            </button>
+        </nav>
+
+        <main class="content-area">
+            
+            <!-- Tab 1: Mission Squad (Unlock Files) -->
+            <div id="tab-mission" class="tab-content active">
+                <div class="doodle-card">
+                    <div class="card-header">
+                        <h2>🔓 ปลดล็อกหลักฐานลับ</h2>
+                        <p>กรอกรหัส 4 หลักที่ได้จากฝ่าย War Room</p>
+                    </div>
+                    <div class="input-group">
+                        <input type="number" id="mission-code-input" placeholder="0000" maxlength="4" pattern="\d*">
+                        <button id="btn-unlock-mission" class="btn-primary">ยืนยันรหัส</button>
+                    </div>
+                    <div id="mission-error" class="error-msg"></div>
+                </div>
+
+                <div id="unlocked-files-container" class="unlocked-container">
+                    <h3>แฟ้มลับที่ปลดล็อกแล้ว</h3>
+                    <div id="unlocked-files-list">
+                        <!-- JS will populate unlocked files -->
+                        <p class="empty-state">ยังไม่มีไฟล์ถูกปลดล็อก</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: QR Treasure Hunt -->
+            <div id="tab-qr" class="tab-content">
+                <div class="doodle-card">
+                    <div class="card-header">
+                        <h2>🗺️ ค้นหาเบาะแส</h2>
+                        <p>ระบุรหัส QR ที่พบ (เช่น QR-01)</p>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="qr-code-input" placeholder="QR-XX" style="text-transform: uppercase;">
+                        <button id="btn-submit-qr" class="btn-primary">ตรวจสอบ</button>
+                    </div>
+                    <div id="qr-error" class="error-msg"></div>
+                </div>
+
+                <!-- QR Quest Modal (hidden by default) -->
+                <div id="qr-quest-modal" class="modal">
+                    <div class="modal-content doodle-card">
+                        <span class="close-modal">&times;</span>
+                        <h3 id="qr-quest-title">QR-01</h3>
+                        <p id="qr-quest-question" class="quest-text">Question goes here...</p>
+                        
+                        <div id="qr-quest-input-area" class="input-group vertical">
+                            <!-- JS will inject text input or multiple choice buttons here -->
+                        </div>
+                        <div id="qr-quest-feedback" class="error-msg"></div>
+                    </div>
+                </div>
+
+                <div class="unlocked-container">
+                    <h3>เบาะแสที่ค้นพบ (<span id="qr-count">0</span>/17)</h3>
+                    <div id="unlocked-clues-list" class="clues-grid">
+                        <!-- JS will populate unlocked clues -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Interrogation / Lie Detector -->
+            <div id="tab-interrogate" class="tab-content">
+                <div class="doodle-card danger-card">
+                    <div class="card-header">
+                        <h2>🚨 เครื่องจับโกหก</h2>
+                        <p>เลือกผู้ต้องสงสัยและงัดหลักฐานเมื่อเขาโกหก</p>
+                    </div>
+                    
+                    <div class="suspect-selector">
+                        <label>สอบสวนใคร?</label>
+                        <select id="suspect-select">
+                            <option value="">-- เลือกผู้ต้องสงสัย --</option>
+                            <option value="ปังปอน">ปังปอน (เลขา)</option>
+                            <option value="อิง">อิง (สวัสดิการ)</option>
+                            <option value="ม่านฟ้า">ม่านฟ้า (ดีไซน์)</option>
+                            <option value="สายน้ำ">สายน้ำ (โปรโมท)</option>
+                            <option value="พีช">พีช (สถานที่)</option>
+                        </select>
+                    </div>
+
+                    <div id="anxiety-monitor" class="anxiety-monitor hidden">
+                        <p class="anxiety-label">ระดับความนิ่ง (Anxiety Bar)</p>
+                        <div class="progress-bar-bg doodle-progress">
+                            <div id="anxiety-bar-fill" class="progress-bar-fill"></div>
+                        </div>
+                        
+                        <div class="evidence-selector">
+                            <p>งัดหลักฐานอะไร?</p>
+                            <select id="evidence-select">
+                                <option value="">-- เลือกหลักฐาน (ถ้ามี) --</option>
+                                <option value="ev-multimeter">มัลติมิเตอร์เปื้อนคราบคาร์บอน (CSI 1)</option>
+                                <option value="ev-log-ip">Log IP สับคัตเอาต์ (QR-06)</option>
+                                <option value="ev-hairpin">กิ๊บติดผมสีชมพู (CSI 2)</option>
+                                <option value="ev-line-chat">LINE Chat อิงวางยา (Mission 2)</option>
+                                <option value="ev-cyanide">ใบเสร็จไซยาไนด์ (CSI 3)</option>
+                                <option value="ev-audio">Audio Log เสียงกระดิ่ง (Mission 3)</option>
+                                <option value="ev-pdf">Goodnotes PDF ทุจริตเงิน (Mission 3)</option>
+                                <option value="ev-time-log">Log เข้าอาคาร 4 18:10 น. (QR-01)</option>
+                            </select>
+                            <button id="btn-accuse" class="btn-danger">จับโกหก!</button>
+                        </div>
+                    </div>
+                    <div id="accuse-feedback" class="feedback-msg"></div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Final Judgment -->
+            <div id="tab-judgment" class="tab-content">
+                <div class="doodle-card final-card">
+                    <div class="card-header">
+                        <h2>⚖️ ศาลพิพากษา</h2>
+                        <p>ส่งคำตอบสุดท้าย (ส่งได้ครั้งเดียวเท่านั้น!)</p>
+                    </div>
+                    
+                    <form id="judgment-form" class="judgment-form">
+                        <div class="form-group">
+                            <label>1. ใครคือฆาตกรตัวจริง?</label>
+                            <select id="judge-killer" required>
+                                <option value="">-- เลือก --</option>
+                                <option value="ปังปอน">ปังปอน</option>
+                                <option value="อิง">อิง</option>
+                                <option value="ม่านฟ้า">ม่านฟ้า</option>
+                                <option value="สายน้ำ">สายน้ำ</option>
+                                <option value="พีช">พีช</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>2. ใช้อะไรเป็นอาวุธสังหาร?</label>
+                            <select id="judge-weapon" required>
+                                <option value="">-- เลือก --</option>
+                                <option value="ยานอนหลับ">ยานอนหลับ</option>
+                                <option value="ไซยาไนด์">สารไซยาไนด์</option>
+                                <option value="สายไฟ">สายไฟช็อต</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>3. หลักฐานชิ้นเด็ดคืออะไร?</label>
+                            <select id="judge-evidence" required>
+                                <option value="">-- เลือก --</option>
+                                <option value="ใบเสร็จ">ใบเสร็จซื้ออุปกรณ์</option>
+                                <option value="เสียงกระดิ่ง">Audio Log เสียงกระดิ่งพวงกุญแจ</option>
+                                <option value="รอยลาก">รอยลากบนพื้นโรงอาหาร</option>
+                                <option value="กิ๊บ">กิ๊บติดผมสีชมพู</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-primary w-100">ส่งฟ้องศาล</button>
+                    </form>
+                    <div id="judgment-feedback" class="hidden"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content doodle-card alert-box">
+            <h3 id="alert-title">Alert</h3>
+            <p id="alert-message">Message</p>
+            <button id="alert-close" class="btn-primary">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Siren Overlay (for Interrogation) -->
+    <div id="siren-overlay" class="hidden">
+        <div class="siren-text">CAUGHT LYING!</div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

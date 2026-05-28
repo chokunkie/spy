@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Mitr:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../app/style.css">
+    <link rel="stylesheet" href="./app/style.css">
     
     <style>
         body { padding: 20px; padding-bottom: 80px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -274,7 +274,7 @@
                     <p style="font-family:'Mitr', sans-serif; font-size:18px; color:var(--ink-blue); margin-bottom:30px;">
                         ระบบยืนยันตัวตนสำเร็จ! คุณสามารถเปิดดูข้อมูลลับได้แล้ว
                     </p>
-                    <a href="case-file.html?qr=${new URLSearchParams(window.location.search).get('qr')}" class="btn btn-submit" style="display:inline-block; text-decoration:none; width:100%; box-sizing:border-box;">📂 เปิดแฟ้มคดีลับ</a>
+                    <a href="casefile.html?qr=${new URLSearchParams(window.location.search).get('qr')}" class="btn btn-submit" style="display:inline-block; text-decoration:none; width:100%; box-sizing:border-box;">📂 เปิดแฟ้มคดีลับ</a>
                 </div>
             `;
         } else {
