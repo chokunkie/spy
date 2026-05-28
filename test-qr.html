@@ -9,34 +9,86 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Mitr:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./app/style.css">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body { padding: 40px 20px; background: var(--bg-cream); }
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
         
         .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-size: 36px; color: var(--ink-blue); font-family: 'Mitr', sans-serif; margin-bottom: 10px; }
-        .header p { color: #64748b; font-family: 'Inter', sans-serif; }
+        .header h1 { font-size: 38px; color: var(--ink-blue); font-family: 'Mitr', sans-serif; margin-bottom: 10px; }
+        .header p { color: #64748b; font-family: 'Inter', sans-serif; font-size: 16px; }
 
-        .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .qr-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+            gap: 30px; 
+        }
         
         .qr-card {
-            background: white; border: 2px solid var(--ink-blue); border-radius: 12px;
-            padding: 20px; text-align: center; text-decoration: none; color: var(--ink-blue);
-            font-family: 'Mitr', sans-serif; transition: all 0.2s;
-            box-shadow: 4px 4px 0px rgba(10,36,99,0.1); display: block;
+            background: white; 
+            border: 3.5px solid var(--ink-blue); 
+            border-radius: 20px;
+            padding: 24px; 
+            text-align: center; 
+            text-decoration: none; 
+            color: var(--ink-blue);
+            font-family: 'Mitr', sans-serif; 
+            transition: all 0.2s;
+            box-shadow: 6px 6px 0px var(--ink-blue); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
         }
-        .qr-card:hover { transform: translateY(-4px); box-shadow: 6px 6px 0px var(--accent-yellow); border-color: var(--accent-yellow); color: var(--ink-blue); }
+        .qr-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 8px 8px 0px var(--accent-yellow); 
+            border-color: var(--accent-yellow); 
+        }
         
-        .qr-id { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
-        .qr-hash { font-family: 'Inter', sans-serif; font-size: 14px; color: #64748b; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; display: inline-block; }
+        .qr-id { font-size: 24px; font-weight: 800; color: var(--ink-blue); }
+        .qr-canvas-holder {
+            padding: 12px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        .qr-hash { 
+            font-family: 'Inter', sans-serif; 
+            font-size: 12px; 
+            color: #64748b; 
+            background: #f1f5f9; 
+            padding: 4px 10px; 
+            border-radius: 6px; 
+            word-break: break-all;
+        }
+        
+        /* Print Styles to print cards cleanly */
+        @media print {
+            body { background: white; padding: 0; }
+            .header, .btn-print-box { display: none !important; }
+            .qr-grid { display: block !important; }
+            .qr-card { 
+                page-break-inside: avoid; 
+                margin-bottom: 40px; 
+                border: 2px solid black !important;
+                box-shadow: none !important;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>🕵️ เมนูทดสอบ QR Code (Test Menu)</h1>
-        <p>จำลองการสแกน QR Code จากจุดต่างๆ ในพื้นที่เกิดเหตุ</p>
+        <h1>🕵️ แผ่นป้าย QR Code กิจกรรมไขคดี (17 จุด)</h1>
+        <p>สามารถสแกนทดสอบหน้างาน หรือกดสั่งพิมพ์ (Ctrl+P) เพื่อนำไปแปะตามจุดต่าง ๆ ในพื้นที่จัดกิจกรรมได้ทันที</p>
+        <div class="btn-print-box" style="margin-top:20px;">
+            <button onclick="window.print()" style="background:var(--accent-yellow); color:var(--ink-blue); border:3px solid var(--ink-blue); padding:10px 24px; border-radius:12px; font-family:'Mitr',sans-serif; font-weight:700; font-size:16px; cursor:pointer; box-shadow:4px 4px 0 var(--ink-blue);">
+                🖨️ สั่งพิมพ์การ์ด QR ทั้งหมด
+            </button>
+        </div>
     </div>
 
     <div class="qr-grid" id="qr-list"></div>
@@ -46,17 +98,38 @@
 <script>
     const qrList = document.getElementById('qr-list');
     
+    // We use the absolute production URL pointing directly to spy-jade.vercel.app
+    const BASE_PROD_URL = "https://spy-jade.vercel.app/quiz.html";
+
     for (const [hash, data] of Object.entries(qrData)) {
-        const a = document.createElement('a');
-        a.href = `quiz.html?qr=${hash}`;
-        a.className = 'qr-card';
+        const fullURL = `${BASE_PROD_URL}?qr=${hash}`;
         
-        a.innerHTML = `
+        const card = document.createElement('div');
+        card.className = 'qr-card';
+        
+        // Holder structure
+        card.innerHTML = `
             <div class="qr-id">${data.id}</div>
-            <div style="font-size: 14px; margin-bottom:12px;">${data.title}</div>
-            <div class="qr-hash">URL: /?qr=${hash}</div>
+            <div style="font-size: 15px; font-weight:600; color:#475569;">${data.title}</div>
+            <div class="qr-canvas-holder" id="qr-holder-${hash}"></div>
+            <div class="qr-hash">${fullURL}</div>
         `;
-        qrList.appendChild(a);
+        
+        qrList.appendChild(card);
+        
+        // Generate actual scannable QR Code inside card
+        try {
+            new QRCode(document.getElementById(`qr-holder-${hash}`), {
+                text: fullURL,
+                width: 180,
+                height: 180,
+                colorDark: '#0A2463',
+                colorLight: '#FFFFFF',
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        } catch(e) {
+            document.getElementById(`qr-holder-${hash}`).textContent = "Error generating QR";
+        }
     }
 </script>
 
