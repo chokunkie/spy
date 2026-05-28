@@ -64,16 +64,41 @@
             word-break: break-all;
         }
         
-        /* Print Styles to print cards cleanly */
+        /* Print Styles to print cards cleanly - one card per page */
         @media print {
-            body { background: white; padding: 0; }
-            .header, .btn-print-box { display: none !important; }
-            .qr-grid { display: block !important; }
+            body { 
+                background: white; 
+                padding: 0; 
+                margin: 0;
+            }
+            .header, .btn-print-box { 
+                display: none !important; 
+            }
+            .qr-grid { 
+                display: block !important; 
+            }
             .qr-card { 
                 page-break-inside: avoid; 
-                margin-bottom: 40px; 
-                border: 2px solid black !important;
+                page-break-after: always; /* Enforce page break after each card */
+                break-after: page;        /* Modern standard for page breaks */
+                border: 4px solid #0A2463 !important;
                 box-shadow: none !important;
+                margin: 0 auto 40px !important;
+                padding: 40px !important; /* Larger padding for full-page feel */
+                width: 100% !important;
+                max-width: 600px !important; /* Elegant size on standard paper */
+                height: 90vh !important; /* Fill height of printed page nicely */
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+            
+            /* Remove extra margin on the very last card to prevent blank page */
+            .qr-card:last-child {
+                page-break-after: avoid;
+                break-after: avoid;
+                margin-bottom: 0 !important;
             }
         }
     </style>
