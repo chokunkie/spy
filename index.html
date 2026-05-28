@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สายลับไขคดี สานฝัน — ศูนย์รวมทางเข้าเว็บ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-cream: #FDFBF7;
+            --ink-blue: #0A2463;
+            --accent-red: #D32F2F;
+            --accent-yellow: #F59E0B;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: var(--bg-cream);
+            background-image: radial-gradient(var(--ink-blue) 1px, transparent 1px);
+            background-size: 24px 24px;
+            font-family: 'Mitr', sans-serif;
+            color: var(--ink-blue);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 540px;
+            background: white;
+            border: 4px solid var(--ink-blue);
+            border-radius: 24px;
+            padding: 40px 28px;
+            box-shadow: 8px 8px 0 var(--ink-blue);
+            text-align: center;
+        }
+        .logo-emoji {
+            font-size: 64px;
+            margin-bottom: 12px;
+        }
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+        .links-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .entry-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 24px;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--ink-blue);
+            background: white;
+            border: 3px solid var(--ink-blue);
+            border-radius: 16px;
+            box-shadow: 4px 4px 0 var(--ink-blue);
+            transition: all 0.15s;
+        }
+        .entry-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0 var(--ink-blue);
+        }
+        .entry-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--ink-blue);
+        }
+        .entry-btn.btn-play {
+            background: #fffbeb;
+            border-color: #d97706;
+            color: #92400e;
+            box-shadow: 4px 4px 0 #92400e;
+        }
+        .entry-btn.btn-play:hover {
+            box-shadow: 6px 6px 0 #92400e;
+        }
+        .entry-btn.btn-play:active {
+            box-shadow: 0 0 0 #92400e;
+        }
+        .entry-btn.btn-case {
+            background: #f0fdf4;
+            border-color: #16a34a;
+            color: #15803d;
+            box-shadow: 4px 4px 0 #15803d;
+        }
+        .entry-btn.btn-case:hover {
+            box-shadow: 6px 6px 0 #15803d;
+        }
+        .entry-btn.btn-case:active {
+            box-shadow: 0 0 0 #15803d;
+        }
+        .entry-btn.btn-qr {
+            background: #fff1f2;
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+            box-shadow: 4px 4px 0 var(--accent-red);
+        }
+        .entry-btn.btn-qr:hover {
+            box-shadow: 6px 6px 0 var(--accent-red);
+        }
+        .entry-btn.btn-qr:active {
+            box-shadow: 0 0 0 var(--accent-red);
+        }
+        .btn-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-arrow {
+            font-size: 20px;
+        }
+        .footer {
+            margin-top: 36px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-emoji">🕵️‍♂️</div>
+        <h1>สายลับไขคดี สานฝัน</h1>
+        <p class="subtitle">ศูนย์ข้อมูลและทางเข้าสู่ระบบกิจกรรมสืบสวน</p>
+        
+        <div class="links-stack">
+            <!-- 1. วิธีการเล่น -->
+            <a href="/how-to-play.html" class="entry-btn btn-play">
+                <span class="btn-title">
+                    <span>📖</span> วิธีการเล่น (How to Play)
+                </span>
+                <span class="btn-arrow">▶</span>
+            </a>
+            
+            <!-- 2. แฟ้มคดี -->
+            <a href="/casefile.html" class="entry-btn btn-case">
+                <span class="btn-title">
+                    <span>📁</span> เปิดแฟ้มคดี (Case File)
+                </span>
+                <span class="btn-arrow">▶</span>
+            </a>
+
+            <!-- 3. หน้าเล่นเกมตอบคำถาม (สแกน QR) -->
+            <a href="/quiz.html" class="entry-btn btn-qr">
+                <span class="btn-title">
+                    <span>📱</span> หน้าตอบคำถาม/สแกน QR (Game Play)
+                </span>
+                <span class="btn-arrow">▶</span>
+            </a>
+        </div>
+        
+        <div class="footer">
+            กิจกรรมสายลับสืบสวนไขคดี • ค่ายสานฝัน 💻
+        </div>
+    </div>
+</body>
+</html>
