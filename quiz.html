@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบตอบคำถาม (Security Question)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Mitr:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../app/style.css">
+    
+    <style>
+        body { padding: 20px; padding-bottom: 80px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 600px; margin-top: 40px; }
+        
+        .quiz-card { 
+            background: white; border: var(--border-width) solid var(--ink-blue); 
+            padding: 40px 30px; border-radius: 12px; 
+            box-shadow: 6px 6px 0px var(--ink-blue); 
+        }
+        
+        .quiz-badge {
+            background: var(--ink-blue); color: white; font-family: 'Outfit', sans-serif;
+            padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600;
+            display: inline-block; margin-bottom: 20px; letter-spacing: 1px;
+        }
+        
+        .progress-text { text-align: center; font-family: 'Mitr', sans-serif; color: #64748b; font-size: 15px; margin-bottom: 12px; font-weight: 500; }
+        .progress-bar-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 30px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--ink-blue); transition: width 0.3s ease; }
+
+        .question-text {
+            font-family: 'Mitr', sans-serif; font-size: 20px; color: var(--ink-blue); font-weight: 600; margin-bottom: 24px; line-height: 1.5; text-align: center;
+        }
+
+        .choices-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        
+        .choice-label {
+            display: flex; align-items: center; padding: 16px 20px; background: white; 
+            border: 2px solid #cbd5e1; border-radius: 10px; 
+            font-family: 'Mitr', sans-serif; font-size: 16px; text-align: left;
+            cursor: pointer; transition: all 0.2s; font-weight: 500; color: #475569;
+            position: relative;
+        }
+        .choice-label input { display: none; }
+        .choice-label:hover { background: #f8fafc; border-color: var(--ink-blue); color: var(--ink-blue); transform: translateX(4px); }
+        .choice-label.selected { background: #f0fdf4; border-color: var(--accent-green); color: var(--accent-green); box-shadow: 3px 3px 0 rgba(10,36,99,0.1); transform: translateX(4px); }
+        
+        .nav-buttons { display: flex; gap: 12px; margin-top: 30px; }
+        .btn {
+            flex: 1; padding: 16px; border: none; border-radius: 8px;
+            font-family: 'Mitr', sans-serif; font-size: 18px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; box-shadow: 4px 4px 0 #0f172a;
+        }
+        .btn-prev { background: white; color: var(--ink-blue); border: 2px solid var(--ink-blue); box-shadow: 4px 4px 0 rgba(10,36,99,0.1); }
+        .btn-next { background: var(--ink-blue); color: white; }
+        .btn-submit { background: var(--accent-green); color: white; }
+        .btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #0f172a; }
+        .btn:disabled { background: #94a3b8; color: white; border-color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
+        
+        .warning-text { 
+            color: #e11d48; font-family: 'Mitr', sans-serif; font-weight: 600; 
+            margin-top: 24px; padding: 16px; border-radius: 8px; text-align: center;
+            background: #fff1f2; border: 2px dashed #fecdd3; display: none;
+        }
+        .warning-text.active { display: block; animation: shake 0.5s ease; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        .error-screen { text-align: center; margin-top: 100px; font-family: 'Mitr', sans-serif; }
+        
+        .cooldown-screen { text-align: center; padding: 50px 20px; }
+        .cooldown-time { font-size: 72px; font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--accent-red); margin: 20px 0; text-shadow: 3px 3px 0px rgba(225,29,72,0.2); }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-container"></div>
+
+<script src="data.js"></script>
+<script>
+    function shuffleArray(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex != 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+        }
+        return array;
+    }
+
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const qrHash = urlParams.get('qr');
+        const container = document.getElementById('main-container');
+
+        if (!qrHash || typeof qrData === 'undefined' || !qrData[qrHash]) {
+            container.innerHTML = `
+                <div class="error-screen doodle-card" style="padding:40px; background:white; border:3px solid var(--ink-blue);">
+                    <h1 style="color:var(--accent-red);">ไม่พบจุดสแกนนี้</h1>
+                    <p>กรุณาสแกน QR Code ใหม่อีกครั้ง หรือเข้าผ่านเมนูทดสอบ</p>
+                    <a href="test-qr.html" style="display:inline-block; margin-top:20px; padding:10px 20px; background:var(--ink-blue); color:white; text-decoration:none; border-radius:8px;">กลับเมนูทดสอบ</a>
+                </div>
+            `;
+        } else {
+            // Initialize Quiz State
+            window.quizData = qrData[qrHash];
+            window.currentStep = 0;
+            window.userAnswers = []; 
+            window.shuffledChoicesMap = [];
+            window.onCooldown = false;
+
+            // Pre-shuffle choices for all questions so they remain identical when user goes Back/Next
+            window.quizData.questions.forEach(q => {
+                let choices = [...q.choices];
+                shuffleArray(choices);
+                window.shuffledChoicesMap.push(choices);
+                window.userAnswers.push(null);
+            });
+
+            // Check if already in cooldown
+            let cooldownEnd = urlParams.get('cd') || sessionStorage.getItem('cooldown_' + qrHash) || localStorage.getItem('cooldown_' + qrHash);
+            if (cooldownEnd && Date.now() < parseInt(cooldownEnd)) {
+                const timeLeft = Math.ceil((parseInt(cooldownEnd) - Date.now()) / 1000);
+                try {
+                    const newUrl = new URL(window.location);
+                    if (newUrl.searchParams.get('cd') !== cooldownEnd) {
+                        newUrl.searchParams.set('cd', cooldownEnd);
+                        window.history.replaceState({}, '', newUrl);
+                    }
+                } catch(e) {}
+                triggerCooldown(timeLeft, parseInt(cooldownEnd));
+            } else {
+                renderQuiz();
+            }
+        }
+    } catch (e) {
+        document.getElementById('main-container').innerHTML = `<div style="padding:20px;background:white;color:red;border:2px solid red;"><h3>Error:</h3><pre>${e.message}</pre><pre>${e.stack}</pre></div>`;
+    }
+
+    function renderQuiz() {
+        if (window.onCooldown) return;
+        
+        const data = window.quizData;
+        const qIndex = window.currentStep;
+        const qObj = data.questions[qIndex];
+        const choices = window.shuffledChoicesMap[qIndex];
+        const selectedVal = window.userAnswers[qIndex];
+        const progressPct = ((qIndex + 1) / data.questions.length) * 100;
+
+        let html = `
+            <div class="quiz-card doodle-card">
+                <div style="text-align: center;">
+                    <span class="quiz-badge">SECURITY CHECK: ${data.id}</span>
+                </div>
+                
+                <div class="progress-text">คำถามที่ ${qIndex + 1} จาก ${data.questions.length}</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: ${progressPct}%;"></div>
+                </div>
+
+                <div class="question-text">${qObj.q}</div>
+                
+                <div class="choices-grid">
+        `;
+        
+        choices.forEach((choice, cIndex) => {
+            const safeChoice = choice.replace(/"/g, '&quot;');
+            const isSelected = (selectedVal === choice) ? 'selected' : '';
+            const checked = (selectedVal === choice) ? 'checked' : '';
+            
+            html += `
+                <label class="choice-label ${isSelected}" onclick="selectChoice('${safeChoice}', this)">
+                    <input type="radio" name="q${qIndex}" value="${safeChoice}" ${checked}>
+                    ${choice}
+                </label>
+            `;
+        });
+
+        html += `
+                </div>
+                
+                <div id="warning-message" class="warning-text"></div>
+                
+                <div class="nav-buttons">
+        `;
+
+        if (qIndex > 0) {
+            html += `<button class="btn btn-prev" onclick="prevStep()">ย้อนกลับ</button>`;
+        }
+        
+        if (qIndex < data.questions.length - 1) {
+            html += `<button class="btn btn-next" onclick="nextStep()">ข้อต่อไป</button>`;
+        } else {
+            html += `<button class="btn btn-submit" onclick="submitQuiz()">ตรวจคำตอบ</button>`;
+        }
+
+        html += `
+                </div>
+            </div>
+        `;
+
+        document.getElementById('main-container').innerHTML = html;
+    }
+
+    function selectChoice(val, element) {
+        if (window.onCooldown) return;
+        
+        // Restore double quotes
+        val = val.replace(/&quot;/g, '"');
+        window.userAnswers[window.currentStep] = val;
+        
+        // Update UI highlighting
+        const labels = document.querySelectorAll('.choice-label');
+        labels.forEach(lbl => lbl.classList.remove('selected'));
+        element.classList.add('selected');
+        
+        // Check the hidden radio input
+        const input = element.querySelector('input[type="radio"]');
+        if (input) input.checked = true;
+    }
+
+    function prevStep() {
+        if (window.currentStep > 0) {
+            window.currentStep--;
+            renderQuiz();
+        }
+    }
+
+    function nextStep() {
+        const warningMsg = document.getElementById('warning-message');
+        if (!window.userAnswers[window.currentStep]) {
+            warningMsg.className = 'warning-text active';
+            warningMsg.innerHTML = '<strong>กรุณาเลือกคำตอบก่อนไปข้อถัดไป!</strong>';
+            setTimeout(() => { warningMsg.className = 'warning-text'; }, 3000);
+            return;
+        }
+        
+        if (window.currentStep < window.quizData.questions.length - 1) {
+            window.currentStep++;
+            renderQuiz();
+        }
+    }
+
+    function submitQuiz() {
+        const warningMsg = document.getElementById('warning-message');
+        if (!window.userAnswers[window.currentStep]) {
+            warningMsg.className = 'warning-text active';
+            warningMsg.innerHTML = '<strong>กรุณาเลือกคำตอบก่อนส่ง!</strong>';
+            setTimeout(() => { warningMsg.className = 'warning-text'; }, 3000);
+            return;
+        }
+
+        const data = window.quizData;
+        let allCorrect = true;
+
+        for (let i = 0; i < data.questions.length; i++) {
+            const correctAns = data.questions[i].choices[0]; // In data.js, index 0 is always correct
+            if (window.userAnswers[i] !== correctAns) {
+                allCorrect = false;
+                break;
+            }
+        }
+
+        if (allCorrect) {
+            document.getElementById('main-container').innerHTML = `
+                <div class="quiz-card doodle-card" style="text-align: center; padding: 60px 20px;">
+                    <h2 style="color:var(--accent-green); font-size:36px; margin-bottom:20px;">รหัสถูกต้อง!</h2>
+                    <p style="font-family:'Mitr', sans-serif; font-size:18px; color:var(--ink-blue); margin-bottom:30px;">
+                        ระบบยืนยันตัวตนสำเร็จ! คุณสามารถเปิดดูข้อมูลลับได้แล้ว
+                    </p>
+                    <a href="case-file.html?qr=${new URLSearchParams(window.location.search).get('qr')}" class="btn btn-submit" style="display:inline-block; text-decoration:none; width:100%; box-sizing:border-box;">📂 เปิดแฟ้มคดีลับ</a>
+                </div>
+            `;
+        } else {
+            triggerCooldown();
+        }
+    }
+
+    function triggerCooldown(initialTimeLeft, existingCdEnd) {
+        window.onCooldown = true;
+        let timeLeft = initialTimeLeft || 30;
+        const qrHash = new URLSearchParams(window.location.search).get('qr');
+        
+        let cdEnd = existingCdEnd;
+        if (!initialTimeLeft) {
+            cdEnd = Date.now() + (30 * 1000);
+            try {
+                localStorage.setItem('cooldown_' + qrHash, cdEnd);
+                sessionStorage.setItem('cooldown_' + qrHash, cdEnd);
+            } catch(e) {}
+            
+            try {
+                const newUrl = new URL(window.location);
+                newUrl.searchParams.set('cd', cdEnd);
+                window.history.replaceState({}, '', newUrl);
+            } catch(e) {}
+        }
+        
+        // Clear all previous answers
+        for(let i = 0; i < window.userAnswers.length; i++) {
+            window.userAnswers[i] = null;
+        }
+        window.currentStep = 0; // Send them back to the first question
+        
+        function renderCooldown() {
+            document.getElementById('main-container').innerHTML = `
+                <div class="quiz-card doodle-card cooldown-screen">
+                    <h2 style="color:var(--accent-red); font-size:32px;">รหัสผ่านผิด!</h2>
+                    <p style="font-family:'Mitr', sans-serif; font-size:18px; color:#64748b; margin-top:15px;">
+                        มีข้อที่ตอบผิด ระบบล็อกการเข้าถึงชั่วคราว<br>
+                        <span style="font-size:14px;">(ไม่สามารถระบุได้ว่าผิดข้อไหน)</span>
+                    </p>
+                    <div class="cooldown-time">${timeLeft}s</div>
+                    <p style="font-family:'Mitr', sans-serif; font-size:16px; color:#94a3b8;">
+                        กรุณารอจนกว่าเวลาจะหมด เพื่อเริ่มตอบใหม่ทั้งหมด
+                    </p>
+                </div>
+            `;
+        }
+        
+        renderCooldown();
+        
+        const timer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                window.onCooldown = false;
+                
+                try {
+                    localStorage.removeItem('cooldown_' + qrHash);
+                    sessionStorage.removeItem('cooldown_' + qrHash);
+                    const newUrl = new URL(window.location);
+                    newUrl.searchParams.delete('cd');
+                    window.history.replaceState({}, '', newUrl);
+                } catch(e) {}
+                
+                // สลับช้อยส์ใหม่ทุกครั้งที่เริ่มทำใหม่
+                window.shuffledChoicesMap = [];
+                window.quizData.questions.forEach(q => {
+                    let choices = [...q.choices];
+                    shuffleArray(choices);
+                    window.shuffledChoicesMap.push(choices);
+                });
+                
+                renderQuiz(); // Go back to Question 1
+            } else {
+                renderCooldown();
+            }
+        }, 1000);
+    }
+</script>
+
+</body>
+</html>

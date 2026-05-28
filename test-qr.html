@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕵️ QR Code Test Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Mitr:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../app/style.css">
+    
+    <style>
+        body { padding: 40px 20px; background: var(--bg-cream); }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-size: 36px; color: var(--ink-blue); font-family: 'Mitr', sans-serif; margin-bottom: 10px; }
+        .header p { color: #64748b; font-family: 'Inter', sans-serif; }
+
+        .qr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        
+        .qr-card {
+            background: white; border: 2px solid var(--ink-blue); border-radius: 12px;
+            padding: 20px; text-align: center; text-decoration: none; color: var(--ink-blue);
+            font-family: 'Mitr', sans-serif; transition: all 0.2s;
+            box-shadow: 4px 4px 0px rgba(10,36,99,0.1); display: block;
+        }
+        .qr-card:hover { transform: translateY(-4px); box-shadow: 6px 6px 0px var(--accent-yellow); border-color: var(--accent-yellow); color: var(--ink-blue); }
+        
+        .qr-id { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .qr-hash { font-family: 'Inter', sans-serif; font-size: 14px; color: #64748b; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>🕵️ เมนูทดสอบ QR Code (Test Menu)</h1>
+        <p>จำลองการสแกน QR Code จากจุดต่างๆ ในพื้นที่เกิดเหตุ</p>
+    </div>
+
+    <div class="qr-grid" id="qr-list"></div>
+</div>
+
+<script src="data.js"></script>
+<script>
+    const qrList = document.getElementById('qr-list');
+    
+    for (const [hash, data] of Object.entries(qrData)) {
+        const a = document.createElement('a');
+        a.href = `quiz.html?qr=${hash}`;
+        a.className = 'qr-card';
+        
+        a.innerHTML = `
+            <div class="qr-id">${data.id}</div>
+            <div style="font-size: 14px; margin-bottom:12px;">${data.title}</div>
+            <div class="qr-hash">URL: /?qr=${hash}</div>
+        `;
+        qrList.appendChild(a);
+    }
+</script>
+
+</body>
+</html>

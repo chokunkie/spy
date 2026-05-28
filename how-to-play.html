@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> วิธีการเล่น — สายลับไขคดี สานฝัน</title>
+    <meta name="description" content="วิธีการเล่นกิจกรรมสายลับไขคดี ค่ายสานฝัน">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <!-- QR Code library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --bg-cream: #FDFBF7;
+            --ink-blue: #0A2463;
+            --ink-light: #1E3A8A;
+            --accent-red: #D32F2F;
+            --accent-yellow: #F59E0B;
+            --accent-green: #10B981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-cream);
+            font-family: 'Mitr', sans-serif;
+        }
+
+        /* ========== SLIDE WRAPPER ========== */
+        .slides-wrapper {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 28px 24px 90px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+        }
+
+        .slide.slide-out-left {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        .slide-inner {
+            width: 100%;
+            max-width: 800px;
+            /* Increased from 600px to make everything much larger */
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            /* Increased gap */
+        }
+
+        /* ========== DOT PATTERN BG ========== */
+        body {
+            background-image: radial-gradient(var(--ink-light) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* ========== TOP PROGRESS BAR ========== */
+        .progress-bar-track {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(10, 36, 99, 0.12);
+            z-index: 100;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent-yellow);
+            border-right: 2px solid var(--ink-blue);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ========== NAV DOTS ========== */
+        .nav-dots {
+            position: fixed;
+            bottom: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(10, 36, 99, 0.25);
+            border: 2px solid rgba(10, 36, 99, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: var(--ink-blue);
+            width: 28px;
+            border-radius: 5px;
+        }
+
+        /* ========== NAV ARROWS ========== */
+        .nav-arrows {
+            position: fixed;
+            bottom: 16px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .nav-btn {
+            pointer-events: all;
+            width: 52px;
+            height: 52px;
+            background: var(--bg-cream);
+            border: 3px solid var(--ink-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--ink-blue);
+            font-size: 22px;
+            transition: all 0.15s;
+            color: var(--ink-blue);
+        }
+
+        .nav-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 var(--ink-blue);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.2;
+            pointer-events: none;
+        }
+
+        /* ========== SLIDE NUMBER ========== */
+        .slide-num-badge {
+            position: fixed;
+            top: 14px;
+            right: 16px;
+            background: var(--ink-blue);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            padding: 5px 13px;
+            border-radius: 20px;
+            z-index: 100;
+        }
+
+        /* ========== COMMON ELEMENTS ========== */
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--ink-blue);
+            font-size: 42px;
+            /* Increased */
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--ink-blue);
+            font-size: 34px;
+            /* Increased */
+        }
+
+        h3 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--ink-blue);
+            font-size: 26px;
+            /* Increased */
+        }
+
+        .badge {
+            display: inline-block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            /* Increased from 13px */
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 8px 20px;
+            /* Increased padding */
+            border-radius: 24px;
+            border: 3.5px solid var(--ink-blue);
+            /* Increased border */
+        }
+
+        .badge-red {
+            background: var(--accent-red);
+            color: white;
+            box-shadow: 2px 2px 0 var(--ink-blue);
+        }
+
+        .badge-yellow {
+            background: var(--accent-yellow);
+            color: var(--ink-blue);
+            box-shadow: 2px 2px 0 var(--ink-blue);
+        }
+
+        .card {
+            background: white;
+            border: 3px solid var(--ink-blue);
+            border-radius: 14px;
+            padding: 18px;
+        }
+
+        .card-shadow {
+            box-shadow: 5px 5px 0 var(--ink-blue);
+        }
+
+        .card-shadow-red {
+            box-shadow: 5px 5px 0 var(--accent-red);
+        }
+
+        .card-shadow-yellow {
+            box-shadow: 5px 5px 0 var(--accent-yellow);
+        }
+
+        .card-shadow-green {
+            box-shadow: 5px 5px 0 var(--accent-green);
+        }
+
+        /* ========== PITCH BLACK SPOTLIGHT REVEAL OVERLAY ========== */
+        .spotlight-mask-overlay {
+            position: fixed;
+            inset: 0;
+            background: #050b14; /* Pitch black */
+            z-index: 9999; /* Over absolutely everything */
+            pointer-events: none;
+            
+            /* Apply our keyframe animation */
+            animation: spotlightRevealSequence 3.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+            
+            /* Modern CSS masking for the single transparent spotlight circle */
+            mask-image: radial-gradient(circle at var(--mask-x, 50%) var(--mask-y, 50%), transparent var(--mask-size, 100px), #000 calc(var(--mask-size, 100px) + 1px));
+            -webkit-mask-image: radial-gradient(circle at var(--mask-x, 50%) var(--mask-y, 50%), transparent var(--mask-size, 100px), #000 calc(var(--mask-size, 100px) + 1px));
+            mask-repeat: no-repeat;
+            -webkit-mask-repeat: no-repeat;
+        }
+
+        @keyframes spotlightRevealSequence {
+            /* 1. Start centered in total darkness with a small spotlight window */
+            0% {
+                --mask-x: 50%;
+                --mask-y: 50%;
+                --mask-size: 110px;
+                opacity: 1;
+                visibility: visible;
+            }
+            /* 2. Spotlight window moves to the top-left */
+            20% {
+                --mask-x: 25%;
+                --mask-y: 30%;
+                --mask-size: 115px;
+            }
+            /* 3. Spotlight window slides down to the bottom-right */
+            45% {
+                --mask-x: 75%;
+                --mask-y: 70%;
+                --mask-size: 115px;
+            }
+            /* 4. Spotlight window slides to the top-right */
+            65% {
+                --mask-x: 70%;
+                --mask-y: 25%;
+                --mask-size: 120px;
+            }
+            /* 5. Spotlight returns to the center, prep for expansion */
+            80% {
+                --mask-x: 50%;
+                --mask-y: 50%;
+                --mask-size: 130px;
+                opacity: 1;
+            }
+            /* 6. Spotlight window expands massive to reveal the whole original screen */
+            92% {
+                --mask-x: 50%;
+                --mask-y: 50%;
+                --mask-size: 1800px;
+                opacity: 1;
+            }
+            /* 7. Hide and deactivate overlay fully */
+            100% {
+                --mask-x: 50%;
+                --mask-y: 50%;
+                --mask-size: 3000px;
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        /* Support for animated CSS custom properties in modern browsers */
+        @property --mask-x {
+            syntax: '<percentage>';
+            inherits: false;
+            initial-value: 50%;
+        }
+        @property --mask-y {
+            syntax: '<percentage>';
+            inherits: false;
+            initial-value: 50%;
+        }
+        @property --mask-size {
+            syntax: '<length>';
+            inherits: false;
+            initial-value: 100px;
+        }
+
+        /* ========== SLIDE 1: INTRO (CLASSIC CREAM LOOK REDESIGNED) ========== */
+        #slide-1 {
+            background: var(--bg-cream) !important; /* Restore classic cream style */
+            position: relative;
+            overflow: hidden;
+        }
+
+        #slide-1 .slide-inner {
+            position: relative;
+            z-index: 5;
+        }
+
+        #slide-1 .hero-emoji {
+            font-size: 110px;
+            text-align: center;
+            margin-bottom: 16px;
+            filter: drop-shadow(4px 4px 0 var(--ink-blue));
+        }
+
+        #slide-1 h1 {
+            color: var(--ink-blue); /* Restore classic gorgeous blue h1 */
+            font-size: clamp(40px, 10vw, 64px);
+            text-shadow: none;
+            text-align: center;
+            line-height: 1.15;
+        }
+
+        #slide-1 .sub {
+            font-size: 24px;
+            color: #475569; /* Restore classic elegant dark grey sub */
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        #slide-1 .start-hint {
+            font-size: 20px;
+            color: rgba(10, 36, 99, 0.45); /* Classic subtle blue indicator */
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* ========== SLIDE 2: STORY ========== */
+        #slide-2 .story-wrap {
+            background: white;
+            border: 4px solid var(--ink-blue);
+            /* Thicker border */
+            border-radius: 20px;
+            /* More rounded */
+            padding: 32px 36px;
+            /* Larger padding */
+            box-shadow: 7px 7px 0 var(--accent-red);
+            /* Stronger shadow */
+            position: relative;
+            overflow: hidden;
+        }
+
+        #slide-2 .story-wrap::before {
+            content: 'TOP SECRET';
+            position: absolute;
+            top: 16px;
+            right: -24px;
+            background: var(--accent-red);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            padding: 6px 32px;
+            transform: rotate(35deg);
+        }
+
+        #slide-2 .story-wrap p {
+            font-size: 20px;
+            /* Increased from 16px */
+            line-height: 1.85;
+            color: #1e293b;
+        }
+
+        /* ========== SLIDE 3: HOW ========== */
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            /* Increased gap */
+        }
+
+        .step-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            /* Increased gap */
+            background: white;
+            border: 3.5px solid var(--ink-blue);
+            /* Thicker border */
+            border-radius: 18px;
+            /* More rounded */
+            padding: 22px 26px;
+            /* Larger padding */
+            box-shadow: 6px 6px 0 rgba(10, 36, 99, 0.12);
+        }
+
+        .step-circle {
+            width: 52px;
+            /* Increased from 42px */
+            height: 52px;
+            background: var(--ink-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            /* Increased from 20px */
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .step-circle.yellow {
+            background: var(--accent-yellow);
+            color: var(--ink-blue);
+        }
+
+        .step-circle.red {
+            background: var(--accent-red);
+        }
+
+        .step-circle.green {
+            background: var(--accent-green);
+        }
+
+        .step-row-body h3 {
+            font-size: 22px;
+            /* Increased from 17px */
+            margin-bottom: 6px;
+        }
+
+        .step-row-body p {
+            font-size: 17px;
+            /* Increased from 15px */
+            color: #475569;
+            line-height: 1.6;
+        }
+
+
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.45;
+            }
+
+            50% {
+                opacity: 1;
+            }
+        }
+
+
+
+        #slide-2 .story-wrap strong {
+            color: var(--accent-red);
+        }
+
+        .timeline-mini {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .timeline-mini-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 15px;
+            color: var(--ink-blue);
+            font-weight: 600;
+        }
+
+        .timeline-dot-mini {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--ink-blue);
+            border: 2px solid var(--ink-blue);
+            flex-shrink: 0;
+        }
+
+        .timeline-dot-mini.red {
+            background: var(--accent-red);
+        }
+
+
+
+        /* ========== SLIDE 4: COOLDOWN ========== */
+        .cooldown-big {
+            background: #fff1f2;
+            border: 3px solid var(--accent-red);
+            border-radius: 18px;
+            padding: 26px;
+            box-shadow: 5px 5px 0 var(--ink-blue);
+            text-align: center;
+        }
+
+        .cooldown-big .timer-big {
+            font-family: 'Outfit', sans-serif;
+            font-size: 100px;
+            font-weight: 800;
+            color: var(--accent-red);
+            line-height: 1;
+            animation: timerPulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes timerPulse {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.04);
+            }
+        }
+
+        .cooldown-big .timer-label {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-red);
+            margin-top: 4px;
+        }
+
+        .cooldown-big .timer-desc {
+            font-size: 20px;
+            /* Increased from 16px */
+            color: #991b1b;
+            margin-top: 14px;
+            line-height: 1.65;
+        }
+
+        .rule-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            /* Increased padding */
+            border-radius: 10px;
+            border: 2.5px solid;
+            font-size: 18px;
+            /* Increased from 15px */
+            font-weight: 700;
+        }
+
+        .chip-red {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+            background: #fff1f2;
+        }
+
+        .chip-yellow {
+            border-color: #d97706;
+            color: #92400e;
+            background: #fffbeb;
+        }
+
+        .chips-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* ========== SLIDE 5: SUSPECTS ========== */
+        .suspects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            /* Increased gap */
+        }
+
+        .suspect-card {
+            background: white;
+            border: 3px solid var(--ink-blue);
+            /* Thicker border */
+            border-radius: 16px;
+            /* More rounded */
+            padding: 18px;
+            /* Larger padding */
+            box-shadow: 4px 4px 0 var(--ink-blue);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            /* Increased gap */
+        }
+
+        .suspect-card.victim {
+            grid-column: 1 / -1;
+            border-color: var(--accent-red);
+            background: #fff1f2;
+            box-shadow: 4px 4px 0 var(--accent-red);
+        }
+
+        .suspect-avatar {
+            width: 72px;
+            /* Increased from 56px */
+            height: 72px;
+            /* Increased from 56px */
+            border-radius: 50%;
+            border: 3px solid var(--ink-blue);
+            overflow: hidden;
+            flex-shrink: 0;
+            background: var(--bg-cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            /* Increased emoji size inside */
+        }
+
+        .suspect-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        .suspect-card.victim .suspect-avatar {
+            border-color: var(--accent-red);
+        }
+
+        .s-name {
+            font-size: 20px;
+            /* Increased from 17px */
+            font-weight: 700;
+            color: var(--ink-blue);
+        }
+
+        .suspect-card.victim .s-name {
+            color: var(--accent-red);
+        }
+
+        .s-role {
+            font-size: 15px;
+            /* Increased from 13px */
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* ========== SLIDE 6: RULES ========== */
+        .rules-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            /* Increased gap */
+        }
+
+        .rule-block {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            /* Increased gap */
+            padding: 20px;
+            /* Increased padding */
+            border-radius: 16px;
+            /* More rounded */
+            border: 3px solid;
+            /* Thicker border */
+        }
+
+        .rule-block.forbidden {
+            background: #fff1f2;
+            border-color: var(--accent-red);
+            box-shadow: 4px 4px 0 var(--accent-red);
+        }
+
+        .rule-block.tip {
+            background: #fffbeb;
+            border-color: var(--accent-yellow);
+            box-shadow: 4px 4px 0 var(--accent-yellow);
+        }
+
+        .rule-icon {
+            font-size: 32px;
+            /* Increased emoji size */
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .rule-block .rule-title {
+            font-size: 20px;
+            /* Increased from 16px */
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .rule-block.forbidden .rule-title {
+            color: var(--accent-red);
+        }
+
+        .rule-block.tip .rule-title {
+            color: #92400e;
+        }
+
+        .rule-block .rule-desc {
+            font-size: 16px;
+            /* Increased from 14px */
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        /* ========== SLIDE: TIMELINE ========== */
+        #slide-timeline {
+            padding: 20px 24px 80px;
+        }
+
+        .tl-header {
+            margin-bottom: 24px;
+        }
+
+        .tl-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--ink-blue);
+            margin-bottom: 6px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .tl-subtitle {
+            font-family: 'Mitr', sans-serif;
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .tl-track {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+        }
+
+        /* The timeline vertical line is centered on the badge (which starts at width of tl-left: 120px + center column offset) */
+        .tl-track::before {
+            content: '';
+            position: absolute;
+            left: 150px;
+            /* Aligned with center of the badge (120px left + 30px offset) */
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom,
+                    var(--accent-green) 0%,
+                    var(--accent-yellow) 35%,
+                    var(--accent-red) 60%,
+                    var(--ink-blue) 80%,
+                    var(--accent-green) 100%);
+            border-radius: 4px;
+            z-index: 0;
+        }
+
+        .tl-row {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Left column strictly contains the time */
+        .tl-left {
+            width: 120px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-right: 20px;
+        }
+
+        .tl-time {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--ink-blue);
+            text-align: right;
+            line-height: 1.3;
+        }
+
+        /* Center column strictly contains the badge */
+        .tl-center {
+            width: 60px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tl-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--bg-cream), 3px 3px 0 var(--ink-blue);
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        .tl-badge.c-green {
+            background: var(--accent-green);
+            box-shadow: 0 0 0 3px var(--bg-cream), 3px 3px 0 #065f46;
+        }
+
+        .tl-badge.c-yellow {
+            background: var(--accent-yellow);
+            color: var(--ink-blue);
+            box-shadow: 0 0 0 3px var(--bg-cream), 3px 3px 0 #92400e;
+        }
+
+        .tl-badge.c-red {
+            background: var(--accent-red);
+            box-shadow: 0 0 0 3px var(--bg-cream), 3px 3px 0 #7f1d1d;
+        }
+
+        .tl-badge.c-blue {
+            background: var(--ink-blue);
+            box-shadow: 0 0 0 3px var(--bg-cream), 3px 3px 0 #000a2e;
+        }
+
+        /* Right column strictly contains the cards */
+        .tl-right {
+            flex: 1;
+            padding: 8px 0 8px 16px;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .tl-card {
+            flex: 1;
+            border-radius: 16px;
+            border: 3px solid;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tl-card.c-green {
+            background: #ecfdf5;
+            border-color: var(--accent-green);
+            box-shadow: 5px 5px 0 #065f46;
+        }
+
+        .tl-card.c-yellow {
+            background: #fffbeb;
+            border-color: #d97706;
+            box-shadow: 5px 5px 0 #92400e;
+        }
+
+        .tl-card.c-red {
+            background: #fff1f2;
+            border-color: var(--accent-red);
+            box-shadow: 5px 5px 0 #7f1d1d;
+        }
+
+        .tl-card.c-blue {
+            background: white;
+            border-color: var(--ink-blue);
+            box-shadow: 5px 5px 0 var(--ink-blue);
+        }
+
+        .tl-card.c-gold {
+            background: #fffbeb;
+            border-color: var(--accent-yellow);
+            box-shadow: 5px 5px 0 var(--accent-yellow);
+        }
+
+        .tl-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: 6px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .tl-card.c-green .tl-card-title {
+            color: #065f46;
+        }
+
+        .tl-card.c-yellow .tl-card-title {
+            color: #92400e;
+        }
+
+        .tl-card.c-red .tl-card-title {
+            color: var(--accent-red);
+        }
+
+        .tl-card.c-blue .tl-card-title {
+            color: var(--ink-blue);
+        }
+
+        .tl-card.c-gold .tl-card-title {
+            color: #78350f;
+        }
+
+        .tl-card-desc {
+            font-family: 'Mitr', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #374151;
+        }
+
+        .tl-card.c-green .tl-card-desc {
+            color: #166534;
+        }
+
+        .tl-card.c-yellow .tl-card-desc {
+            color: #78350f;
+        }
+
+        .tl-card.c-red .tl-card-desc {
+            color: #991b1b;
+        }
+
+        .tl-card.c-gold .tl-card-desc {
+            color: #78350f;
+        }
+
+        /* ========== SLIDE 8: PRIZE ========== */
+        #slide-prize .prize-wrap {
+            background: var(--ink-blue);
+            border: 4.5px solid var(--ink-blue);
+            /* Thicker border */
+            border-radius: 24px;
+            /* More rounded */
+            padding: 48px 36px;
+            /* Increased padding */
+            text-align: center;
+            box-shadow: 9px 9px 0 var(--accent-yellow);
+            /* Larger shadow */
+            position: relative;
+            overflow: hidden;
+        }
+
+        #slide-prize .prize-wrap::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 160px;
+            height: 160px;
+            border: 32px solid rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+        }
+
+        .prize-emoji {
+            font-size: 84px;
+            /* Increased from 64px */
+            margin-bottom: 16px;
+        }
+
+        .prize-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 38px;
+            /* Increased from 30px */
+            font-weight: 800;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .prize-money-box {
+            background: var(--accent-yellow);
+            border: 3.5px solid white;
+            /* Thicker border */
+            border-radius: 18px;
+            /* More rounded */
+            padding: 24px 32px;
+            /* Increased padding */
+            margin: 20px 0;
+            box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.25);
+        }
+
+        .prize-money-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            /* Increased from 16px */
+            font-weight: 700;
+            color: var(--ink-blue);
+            opacity: 0.85;
+        }
+
+        .prize-money-amount {
+            font-family: 'Outfit', sans-serif;
+            font-size: 44px;
+            /* Increased from 34px */
+            font-weight: 800;
+            color: var(--ink-blue);
+            margin-top: 8px;
+        }
+
+        .prize-desc {
+            font-size: 18px;
+            /* Increased from 15px */
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.7;
+        }
+
+        .prize-from {
+            margin-top: 20px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            /* Increased from 16px */
+            font-weight: 700;
+            color: var(--accent-yellow);
+        }
+
+        /* ========== SLIDE 9 (LAST): QR ========== */
+        #slide-qr {
+            background: var(--ink-blue);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        #slide-qr h1 {
+            color: white;
+            font-size: clamp(32px, 7vw, 46px);
+            /* Increased */
+            text-align: center;
+        }
+
+        #slide-qr .qr-sub {
+            font-size: 20px;
+            /* Increased from 17px */
+            color: rgba(255, 255, 255, 0.75);
+            text-align: center;
+            line-height: 1.65;
+        }
+
+        .qr-box {
+            background: white;
+            border: 4.5px solid var(--accent-yellow);
+            /* Thicker border */
+            border-radius: 24px;
+            /* More rounded */
+            padding: 32px;
+            /* Increased padding */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            /* Increased gap */
+            box-shadow: 9px 9px 0 var(--accent-yellow);
+            /* Larger shadow */
+            width: fit-content;
+            margin: 0 auto;
+        }
+
+        #qr-canvas {
+            display: block;
+        }
+
+        .qr-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            /* Increased from 15px */
+            font-weight: 800;
+            color: var(--ink-blue);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .qr-scan-hint {
+            font-size: 18px;
+            /* Increased from 16px */
+            color: rgba(255, 255, 255, 0.65);
+            text-align: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* ========== SWIPE HINT ========== */
+        .swipe-hint {
+            font-size: 14px;
+            color: rgba(10, 36, 99, 0.4);
+            text-align: center;
+        }
+
+        #slide-qr .swipe-hint {
+            color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== PITCH BLACK SPOTLIGHT REVEAL OVERLAY ===== -->
+    <div class="spotlight-mask-overlay"></div>
+
+    <!-- ===== PROGRESS BAR ===== -->
+    <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+
+    <!-- ===== SLIDE NUM ===== -->
+    <div class="slide-num-badge" id="slideNumBadge">1 / 8</div>
+    <!-- FAQ slide removed -->
+
+    <!-- ===== SLIDES WRAPPER ===== -->
+    <div class="slides-wrapper" id="slidesWrapper">
+
+        <!-- ===== SLIDE 1: INTRO ===== -->
+        <div class="slide active" id="slide-1">
+            <div class="slide-inner" style="align-items:center; gap:24px;">
+                <div class="badge badge-red">📁 CLASSIFIED FILE</div>
+                <div class="hero-emoji">🕵️</div>
+                <h1 style="text-align:center; line-height:1.15;">
+                    สายลับไขคดี<br>สานฝัน
+                </h1>
+                <p class="sub" style="color:#475569; text-align:center; line-height:1.7;">
+                    คืนแห่งพิธีปิดค่าย มีคนถูกฆ่า<br>
+                    ภารกิจของคุณคือ <strong style="color:var(--accent-red)">ค้นหาฆาตกร</strong>
+                </p>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:10px; margin-top:12px;">
+                    <div class="badge badge-yellow">คู่มือสายลับหน้าใหม่</div>
+                    <div
+                        style="font-size:16px; color:rgba(10,36,99,0.4); margin-top:8px; animation: pulse 2s ease-in-out infinite;">
+                        ▶ กดลูกศรขวาเพื่อเริ่ม
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SLIDE 2: STORY ===== -->
+        <div class="slide" id="slide-2">
+            <div class="slide-inner">
+                <div class="badge badge-red" style="align-self:flex-start;">📜 เรื่องราว</div>
+                <div class="story-wrap">
+                    <p>
+                        คืนวันพิธีปิดค่ายสานฝัน เวลา <strong>18:20 น.</strong> ไฟดับทั่วบริเวณอย่างกะทันหัน<br><br>
+                        5 นาทีต่อมา พบ <strong>ศพโชกุน</strong> ประธานค่าย ในห้องการเงิน อาคาร 1 โดยปริศนา
+                    </p>
+                    <div class="timeline-mini"
+                        style="margin-top:14px; padding-top:14px; border-top:2px dashed var(--ink-blue);">
+                        <div class="timeline-mini-item">
+                            <div class="timeline-dot-mini"></div>
+                            <span>18:00 น. — เริ่มพิธีปิดค่าย</span>
+                        </div>
+                        <div class="timeline-mini-item">
+                            <div class="timeline-dot-mini"></div>
+                            <span>ช่วงเย็น — โชกุนนัดพบใครบางคน...</span>
+                        </div>
+                        <div class="timeline-mini-item">
+                            <div class="timeline-dot-mini"></div>
+                            <span>18:20 น. — ไฟดับทั่วค่าย</span>
+                        </div>
+                        <div class="timeline-mini-item">
+                            <div class="timeline-dot-mini red"></div>
+                            <span style="color:var(--accent-red);">☠️ 18:25 น. — พบศพโชกุน</span>
+                        </div>
+                    </div>
+                </div>
+                <p style="font-size:18px; color:#475569; text-align:center; line-height:1.65;">
+                    ภารกิจของคุณ: <strong style="color:var(--ink-blue)">สืบสวนเบาะแส และตัดสินว่าใครคือฆาตกร?</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- ===== SLIDE 3: HOW TO PLAY ===== -->
+        <div class="slide" id="slide-3">
+            <div class="slide-inner">
+                <div class="badge badge-yellow" style="align-self:flex-start;">🔢 วิธีการเล่น</div>
+                <div class="step-list">
+                    <div class="step-row">
+                        <div class="step-circle">1</div>
+                        <div class="step-row-body">
+                            <h3>เปิดแฟ้มคดี ศึกษาข้อมูล</h3>
+                            <p>อ่านประวัติผู้ต้องสงสัย ทามไลน์ และแผนที่ให้ครบก่อนออกสืบสวน</p>
+                        </div>
+                    </div>
+                    <div class="step-row">
+                        <div class="step-circle yellow">2</div>
+                        <div class="step-row-body">
+                            <h3>ค้นหา QR Code ตามจุดต่างๆ</h3>
+                            <p>QR Code ซ่อนอยู่ตามสถานที่ต่างๆ สแกนเพื่อรับคำถามและเบาะแส</p>
+                        </div>
+                    </div>
+                    <div class="step-row">
+                        <div class="step-circle">3</div>
+                        <div class="step-row-body">
+                            <h3>ตอบคำถาม ปลดล็อกหลักฐาน</h3>
+                            <p>ตอบให้ถูก 4 ข้อรวดเดียว — ถ้าผิดจะ <strong style="color:var(--accent-red);">ล็อก 30
+                                    วินาที!</strong></p>
+                        </div>
+                    </div>
+                    <div class="step-row">
+                        <div class="step-circle green">4</div>
+                        <div class="step-row-body">
+                            <h3>วิเคราะห์ ตัดผู้ต้องสงสัย</h3>
+                            <p>ใช้หลักฐานและตรรกะ ตัดชื่อผู้ต้องสงสัยจนเหลือฆาตกรตัวจริง</p>
+                        </div>
+                    </div>
+                    <div class="step-row">
+                        <div class="step-circle red">5</div>
+                        <div class="step-row-body">
+                            <h3>ส่งคำตัดสินเมื่อถึงเวลากำหนด!</h3>
+                            <p>ระบุให้ครบ 3 อย่าง: <strong style="color:var(--accent-red);">ใครคือคนร้าย · อาวุธสังหาร ·
+                                    แรงจูงใจ</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SLIDE 4: COOLDOWN ===== -->
+        <div class="slide" id="slide-4">
+            <div class="slide-inner" style="align-items:center;">
+                <div class="badge badge-red" style="align-self:center;">⏳ ระบบ Cooldown</div>
+                <div class="cooldown-big">
+                    <div class="timer-big" id="cdTimer">30</div>
+                    <div class="timer-label">วินาที</div>
+                    <div class="timer-desc">
+                        หากตอบคำถาม <strong>ผิดแม้แต่ข้อเดียว</strong><br>
+                        ระบบจะล็อกทันที — อย่าสุ่มเดา!
+                    </div>
+                </div>
+                <div class="card" style="width:100%; padding:24px;">
+                    <div style="font-size:18px; font-weight:700; color:var(--ink-blue); margin-bottom:16px;">💡
+                        เคล็ดลับป้องกัน Cooldown</div>
+                    <div class="chips-row">
+                        <span class="rule-chip chip-yellow">🤔 คิดให้ดีก่อนตอบ</span>
+                        <span class="rule-chip chip-yellow">👥 ปรึกษาทีมก่อน</span>
+                        <span class="rule-chip chip-red">🚫 อย่าสุ่มเดา</span>
+                        <span class="rule-chip chip-yellow">🙋 ถามสตาฟฟ์ได้</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SLIDE 5: SUSPECTS ===== -->
+        <div class="slide" id="slide-5">
+            <div class="slide-inner">
+                <div class="badge badge-red" style="align-self:flex-start;">👤 ผู้เกี่ยวข้องในคดี</div>
+                <div class="suspects-grid">
+                    <div class="suspect-card victim">
+                        <div class="suspect-avatar">
+                            <img src="../picture/โชกุน.jpg" alt="โชกุน"
+                                onerror="this.style.display='none';this.parentNode.textContent='☠️'">
+                        </div>
+                        <div>
+                            <div class="s-name">☠️ โชกุน — ผู้เสียชีวิต</div>
+                            <div class="s-role">ประธานค่าย | พบศพในห้องการเงิน</div>
+                        </div>
+                    </div>
+                    <div class="suspect-card">
+                        <div class="suspect-avatar">
+                            <img src="../picture/อิง.jpg" alt="อิง"
+                                onerror="this.style.display='none';this.parentNode.textContent='👩'">
+                        </div>
+                        <div>
+                            <div class="s-name">พี่อิง</div>
+                            <div class="s-role">หัวหน้าฝ่ายสวัสดิการ</div>
+                        </div>
+                    </div>
+                    <div class="suspect-card">
+                        <div class="suspect-avatar">
+                            <img src="../picture/พีช.jpg" alt="พีช"
+                                onerror="this.style.display='none';this.parentNode.textContent='👦'">
+                        </div>
+                        <div>
+                            <div class="s-name">พี่พีช</div>
+                            <div class="s-role">ทีมงานค่ายสานฝัน</div>
+                        </div>
+                    </div>
+                    <div class="suspect-card">
+                        <div class="suspect-avatar">
+                            <img src="../picture/ปังปอนด์.jpg" alt="ปังปอน"
+                                onerror="this.style.display='none';this.parentNode.textContent='🧢'">
+                        </div>
+                        <div>
+                            <div class="s-name">ปังปอน</div>
+                            <div class="s-role">ทีมงานค่ายสานฝัน</div>
+                        </div>
+                    </div>
+                    <div class="suspect-card">
+                        <div class="suspect-avatar">
+                            <img src="../picture/สายน้ำ.jpg" alt="สายน้ำ"
+                                onerror="this.style.display='none';this.parentNode.textContent='🌊'">
+                        </div>
+                        <div>
+                            <div class="s-name">สายน้ำ</div>
+                            <div class="s-role">ทีมงานค่ายสานฝัน</div>
+                        </div>
+                    </div>
+                </div>
+                <p style="font-size:17px; color:#64748b; text-align:center;">หนึ่งในนี้คือฆาตกร — แต่ใคร? 🤔</p>
+            </div>
+        </div>
+
+        <!-- ===== SLIDE 6: RULES ===== -->
+        <div class="slide" id="slide-6">
+            <div class="slide-inner">
+                <div class="badge badge-red" style="align-self:flex-start;">📋 กฎกติกา</div>
+                <div class="rules-stack">
+                    <div class="rule-block forbidden">
+                        <div class="rule-icon">🚫</div>
+                        <div>
+                            <div class="rule-title">ห้ามขึ้นอาคาร 3 โดยเด็ดขาด</div>
+                            <div class="rule-desc">ห้ามเข้าบริเวณอาคาร 3 ไม่ว่ากรณีใด</div>
+                        </div>
+                    </div>
+                    <div class="rule-block forbidden">
+                        <div class="rule-icon">🚫</div>
+                        <div>
+                            <div class="rule-title">ห้ามเข้าห้องน้ำเพศตรงข้าม</div>
+                            <div class="rule-desc">ปฏิบัติตามกฎของสถานที่โดยเคร่งครัด</div>
+                        </div>
+                    </div>
+                    <div class="rule-block forbidden">
+                        <div class="rule-icon">🚫</div>
+                        <div>
+                            <div class="rule-title">ห้ามขึ้นชั้นบนอาคาร 1</div>
+                            <div class="rule-desc">อาคาร 1 เข้าได้เฉพาะ <strong>ห้องการเงิน</strong> เท่านั้น</div>
+                        </div>
+                    </div>
+                    <div class="rule-block tip">
+                        <div class="rule-icon">🤐</div>
+                        <div>
+                            <div class="rule-title">ห้ามสปอยล์ทีมอื่น</div>
+                            <div class="rule-desc">รู้ตัวฆาตกรแล้วก็ห้ามบอก ให้ทุกคนได้ไขเอง</div>
+                        </div>
+                    </div>
+                    <div class="rule-block tip">
+                        <div class="rule-icon">🎲</div>
+                        <div>
+                            <div class="rule-title">ห้ามสุ่มเดา — ถามสตาฟฟ์ได้!</div>
+                            <div class="rule-desc">Cooldown ทำให้เสียเวลามาก ถามสตาฟฟ์หน้างานได้เลย</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SLIDE: TIMELINE ===== -->
+        <div class="slide" id="slide-timeline">
+            <div class="slide-inner">
+
+                <div class="tl-header">
+                    <div class="tl-title">ตารางเวลาเล่น</div>
+                    <div class="tl-subtitle">19:20 — 21:00 น.</div>
+                </div>
+
+                <div class="tl-track">
+
+                    <!-- ROW 1 -->
+                    <div class="tl-row">
+                        <div class="tl-left">
+                            <div class="tl-time">19:20</div>
+                        </div>
+                        <div class="tl-center">
+                            <div class="tl-badge c-green">1</div>
+                        </div>
+                        <div class="tl-right">
+                            <div class="tl-card c-green">
+                                <div class="tl-card-title">ปล่อยตัวนักสืบ — เริ่มเกม!</div>
+                                <div class="tl-card-desc">สแกน QR Code เข้าสู่แฟ้มคดี และออกสืบสวน</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW 2 -->
+                    <div class="tl-row">
+                        <div class="tl-left">
+                            <div class="tl-time">19:20<br>—<br>20:30</div>
+                        </div>
+                        <div class="tl-center">
+                            <div class="tl-badge c-yellow">2</div>
+                        </div>
+                        <div class="tl-right">
+                            <div class="tl-card c-yellow">
+                                <div class="tl-card-title">ช่วงสืบสวน</div>
+                                <div class="tl-card-desc">ค้นหา QR ตามจุดต่างๆ ตอบคำถาม รวบรวมหลักฐาน
+                                    และวิเคราะห์ผู้ต้องสงสัย</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW 3 -->
+                    <div class="tl-row">
+                        <div class="tl-left">
+                            <div class="tl-time">20:30</div>
+                        </div>
+                        <div class="tl-center">
+                            <div class="tl-badge c-red">3</div>
+                        </div>
+                        <div class="tl-right">
+                            <div class="tl-card c-red">
+                                <div class="tl-card-title">หมดเวลาสืบสวน</div>
+                                <div class="tl-card-desc">หยุดสืบสวน — รวมทีม เตรียมตัดสินใจชี้ตัวฆาตกร</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW 4 -->
+                    <div class="tl-row">
+                        <div class="tl-left">
+                            <div class="tl-time">20:30<br>—<br>20:45</div>
+                        </div>
+                        <div class="tl-center">
+                            <div class="tl-badge c-blue">4</div>
+                        </div>
+                        <div class="tl-right">
+                            <div class="tl-card c-blue">
+                                <div class="tl-card-title">ส่งคำตัดสิน</div>
+                                <div class="tl-card-desc">ระบุ <strong>คนร้าย · อาวุธสังหาร · แรงจูงใจ</strong>
+                                    ให้ครบถ้วน</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW 5 -->
+                    <div class="tl-row">
+                        <div class="tl-left">
+                            <div class="tl-time">21:00</div>
+                        </div>
+                        <div class="tl-center">
+                            <div class="tl-badge c-green">5</div>
+                        </div>
+                        <div class="tl-right">
+                            <div class="tl-card c-gold">
+                                <div class="tl-card-title">ประกาศผล และเฉลยคดี</div>
+                                <div class="tl-card-desc">เฉลยว่าใครคือฆาตกรตัวจริง พร้อมมอบรางวัลแต้มลูกอม!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SLIDE 8: PRIZE ===== -->
+        <div class="slide" id="slide-prize">
+            <div class="slide-inner" style="align-items:center;">
+                <div class="prize-wrap" style="width:100%;">
+                    <div class="prize-emoji">🍬</div>
+                    <div class="prize-title">เล่นแล้วได้อะไร?</div>
+                    <div class="prize-desc"
+                        style="font-size: 22px; line-height: 1.8; color: #fff; margin: 24px 0 12px; font-weight: 500;">
+                        รางวัลสุดพิเศษและแต้มลูกอมสะสมมากมาย!<br>
+                        สำหรับทีมที่ไขคดีได้ถูกต้อง
+                    </div>
+                    <div class="prize-from"
+                        style="font-size: 20px; color: var(--accent-yellow); margin-top: 24px; font-weight: 700;">
+                        🎤 รอฟังรายละเอียดจากพี่ปังปอนด์ได้เลย!
+                    </div>
+                </div>
+                <p style="font-size:16px; color:#64748b; text-align:center; margin-top:12px;">
+                    พร้อมแล้วก็ไปหน้าต่อไปเพื่อเข้าสู่แฟ้มคดี →
+                </p>
+            </div>
+        </div>
+
+        <!-- ===== SLIDE 9 (LAST): QR CODE ===== -->
+        <div class="slide" id="slide-qr">
+            <div class="slide-inner" style="align-items:center; gap:24px;">
+                <h1>📱 เข้าสู่แฟ้มคดี</h1>
+                <p class="qr-sub">สแกน QR Code ด้านล่างเพื่อเริ่มภารกิจ!</p>
+                <div class="qr-box">
+                    <div id="qr-canvas"></div>
+                    <div class="qr-label">🕵️ CASE FILE — สานฝัน</div>
+                </div>
+                <div class="qr-scan-hint">📷 เปิดกล้องแล้วสแกนได้เลย</div>
+                <div style="font-size:15px; color:rgba(255,255,255,0.4); text-align:center; margin-top:8px;">
+                    หรือพิมพ์ URL ใน Browser ได้เช่นกัน
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end slides-wrapper -->
+
+    <!-- ===== NAV DOTS ===== -->
+    <div class="nav-dots" id="navDots"></div>
+
+    <!-- ===== NAV ARROWS ===== -->
+    <div class="nav-arrows">
+        <button class="nav-btn" id="btnPrev" onclick="changeSlide(-1)" disabled>◀</button>
+        <button class="nav-btn" id="btnNext" onclick="changeSlide(1)">▶</button>
+    </div>
+
+    <script>
+        // ===== SLIDE DATA =====
+        const TOTAL_SLIDES = 9;
+        let current = 0;
+        let isAnimating = false;
+
+        const slideEls = [
+            document.getElementById('slide-1'),
+            document.getElementById('slide-2'),
+            document.getElementById('slide-3'),
+            document.getElementById('slide-4'),
+            document.getElementById('slide-5'),
+            document.getElementById('slide-6'),
+            document.getElementById('slide-timeline'),
+            document.getElementById('slide-prize'),
+            document.getElementById('slide-qr'),
+        ];
+
+        // ===== BUILD DOTS =====
+        const dotsEl = document.getElementById('navDots');
+        slideEls.forEach((_, i) => {
+            const d = document.createElement('div');
+            d.className = 'dot' + (i === 0 ? ' active' : '');
+            d.onclick = () => goTo(i);
+            dotsEl.appendChild(d);
+        });
+
+        function updateUI() {
+            // Progress bar
+            document.getElementById('progressFill').style.width = ((current + 1) / TOTAL_SLIDES * 100) + '%';
+            // Slide num badge
+            document.getElementById('slideNumBadge').textContent = (current + 1) + ' / ' + TOTAL_SLIDES;
+            // Dots
+            dotsEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+            // Buttons
+            document.getElementById('btnPrev').disabled = current === 0;
+            document.getElementById('btnNext').disabled = current === TOTAL_SLIDES - 1;
+        }
+
+        function goTo(index) {
+            if (isAnimating || index === current) return;
+            isAnimating = true;
+
+            const dir = index > current ? 1 : -1;
+            const outEl = slideEls[current];
+            const inEl = slideEls[index];
+
+            // Setup incoming slide off-screen
+            inEl.style.transition = 'none';
+            inEl.style.transform = dir > 0 ? 'translateX(100%)' : 'translateX(-100%)';
+            inEl.style.opacity = '0';
+            inEl.classList.add('active');
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    inEl.style.transition = '';
+                    inEl.style.transform = 'translateX(0)';
+                    inEl.style.opacity = '1';
+
+                    outEl.style.transform = dir > 0 ? 'translateX(-100%)' : 'translateX(100%)';
+                    outEl.style.opacity = '0';
+                });
+            });
+
+            setTimeout(() => {
+                outEl.classList.remove('active');
+                outEl.style.transform = '';
+                outEl.style.opacity = '';
+                current = index;
+                updateUI();
+                isAnimating = false;
+            }, 420);
+        }
+
+        function changeSlide(dir) {
+            const next = current + dir;
+            if (next >= 0 && next < TOTAL_SLIDES) goTo(next);
+        }
+
+        // ===== SWIPE =====
+        let touchStartX = 0;
+        const wrapper = document.getElementById('slidesWrapper');
+        wrapper.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+        wrapper.addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+        }, { passive: true });
+
+        // ===== KEYBOARD =====
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+        });
+
+        // ===== FAQ =====
+        function toggleFaq(el) {
+            const isOpen = el.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(f => f.classList.remove('open'));
+            if (!isOpen) el.classList.add('open');
+        }
+
+        // ===== COOLDOWN TIMER DEMO =====
+        let cdCount = 30;
+        const cdEl = document.getElementById('cdTimer');
+        setInterval(() => {
+            cdCount = cdCount <= 0 ? 30 : cdCount - 1;
+            if (cdEl) {
+                cdEl.textContent = cdCount;
+                if (cdCount > 20) cdEl.style.color = 'var(--accent-red)';
+                else if (cdCount > 10) cdEl.style.color = '#ea580c';
+                else cdEl.style.color = '#16a34a';
+            }
+        }, 1000);
+
+        // ===== QR CODE =====
+        const QR_URL = 'casefile.html';
+        try {
+            new QRCode(document.getElementById('qr-canvas'), {
+                text: window.location.href.replace('how-to-play.html', 'casefile.html'),
+                width: 240,
+                height: 240,
+                colorDark: '#0A2463',
+                colorLight: '#FFFFFF',
+                correctLevel: QRCode.CorrectLevel.H,
+            });
+        } catch (e) {
+            // fallback if library not loaded
+            const fb = document.getElementById('qr-canvas');
+            fb.style.cssText = 'width:240px;height:240px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:15px;color:#64748b;text-align:center;padding:20px;';
+            fb.textContent = 'QR Code (casefile.html)';
+        }
+
+        // ===== INIT =====
+        updateUI();
+    </script>
+</body>
+
+</html>

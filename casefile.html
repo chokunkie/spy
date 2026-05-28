@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แฟ้มคดี — สานฝัน Mystery</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Mitr:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../app/style.css">
+    <style>
+        body {
+            padding: 0;
+            background: var(--bg-cream);
+        }
+
+        /* ========= HEADER ========= */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        /* ========= TABS ========= */
+        .tab-bar {
+            display: flex;
+            background: white;
+            border-bottom: var(--border-width) solid var(--ink-blue);
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .tab-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 14px 20px;
+            font-family: 'Mitr', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #64748b;
+            background: none;
+            border: none;
+            border-bottom: 4px solid transparent;
+            box-shadow: none;
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--ink-blue);
+        }
+
+        .tab-btn.active {
+            color: var(--ink-blue);
+            border-bottom-color: var(--accent-red);
+        }
+
+        .tab-btn:active {
+            transform: none;
+        }
+
+        /* ========= SECTIONS ========= */
+        .section {
+            display: none;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--ink-blue);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed var(--ink-blue);
+        }
+
+        /* ========= CHARACTER CARDS ========= */
+        .victim-banner {
+            background: white;
+            border: var(--border-width) solid var(--ink-blue);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 4px 4px 0px var(--accent-red);
+        }
+
+        .victim-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--accent-red);
+            flex-shrink: 0;
+        }
+
+        .victim-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        .victim-info h2 {
+            font-family: 'Mitr', sans-serif;
+            font-size: 20px;
+            color: var(--accent-red);
+            margin-bottom: 4px;
+        }
+
+        .victim-info p {
+            font-family: 'Mitr', sans-serif;
+            font-size: 14px;
+            color: var(--ink-blue);
+            font-weight: 600;
+        }
+
+        .suspect-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--ink-blue);
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .character-card {
+            background: white;
+            border: var(--border-width) solid var(--ink-blue);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 4px 4px 0px var(--ink-blue);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: stretch;
+            border-bottom: 2px dashed var(--ink-blue);
+        }
+
+        .card-photo {
+            width: 110px;
+            flex-shrink: 0;
+            border-right: 2px dashed var(--ink-blue);
+        }
+
+        .card-photo img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+        }
+
+        .card-info {
+            flex: 1;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-name {
+            font-family: 'Mitr', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--ink-blue);
+            margin-bottom: 4px;
+        }
+
+        .card-role {
+            font-family: 'Mitr', sans-serif;
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .card-bio {
+            padding: 16px;
+            font-family: 'Mitr', sans-serif;
+            font-size: 14px;
+            color: var(--ink-blue);
+            line-height: 1.6;
+            background: var(--bg-cream);
+        }
+
+        /* ========= TIMELINE ========= */
+        .timeline-container {
+            position: relative;
+            padding-left: 24px;
+            margin-top: 20px;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 11px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--ink-blue);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -21px;
+            top: 12px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid var(--ink-blue);
+            background: white;
+        }
+
+        .timeline-dot.death {
+            background: var(--accent-red);
+            border-color: var(--ink-blue);
+        }
+
+        .timeline-card {
+            background: white;
+            border: 2px solid var(--ink-blue);
+            border-radius: 8px;
+            padding: 14px 16px;
+            margin-left: 12px;
+            box-shadow: 4px 4px 0px rgba(10, 36, 99, 0.1);
+        }
+
+        .timeline-card.death-card {
+            border-color: var(--accent-red);
+            box-shadow: 4px 4px 0px var(--accent-red);
+        }
+
+        .timeline-time {
+            font-family: 'Mitr', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink-blue);
+            margin-bottom: 6px;
+        }
+
+        .timeline-card.death-card .timeline-time {
+            color: var(--accent-red);
+        }
+
+        .timeline-desc {
+            font-family: 'Mitr', sans-serif;
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.5;
+        }
+
+        /* ========= MAP ========= */
+        .map-title {
+            font-family: 'Mitr', sans-serif;
+            font-size: 14px;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .map-cell {
+            background: white;
+            border: 2px solid var(--ink-blue);
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            font-family: 'Mitr', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.4;
+            box-shadow: 2px 2px 0px rgba(10, 36, 99, 0.1);
+        }
+
+        .map-cell.clue-spot {
+            background: var(--bg-cream);
+            border-color: var(--ink-blue);
+            color: var(--ink-blue);
+            box-shadow: 4px 4px 0px var(--accent-yellow);
+        }
+
+        .map-cell.empty {
+            opacity: 0.3;
+            box-shadow: none;
+            border-style: dashed;
+        }
+
+        .map-legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+            justify-content: center;
+            font-family: 'Mitr', sans-serif;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            border: 2px solid var(--ink-blue);
+        }
+
+        .legend-dot.yellow {
+            background: var(--accent-yellow);
+        }
+
+        /* ========= RULES ========= */
+        .rule-group {
+            margin-bottom: 24px;
+        }
+
+        .rule-group-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--ink-blue);
+            padding-bottom: 8px;
+            border-bottom: 2px dashed var(--ink-blue);
+            margin-bottom: 12px;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            background: white;
+            border: 2px solid var(--ink-blue);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-family: 'Mitr', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ink-blue);
+            line-height: 1.5;
+            box-shadow: 3px 3px 0px rgba(10, 36, 99, 0.1);
+        }
+
+        .rule-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .rule-item.forbidden {
+            box-shadow: 3px 3px 0px var(--accent-red);
+        }
+
+        .rule-item.info {
+            box-shadow: 3px 3px 0px #3b82f6;
+        }
+
+        .rule-item.warn {
+            box-shadow: 3px 3px 0px var(--accent-yellow);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-header">
+        <h2 class="header-title">🕵️ แฟ้มคดี</h2>
+        <div class="header-info" style="color:var(--ink-blue);">TOP SECRET</div>
+    </div>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('profiles')">👤 ประวัติผู้ต้องสงสัย</button>
+        <button class="tab-btn" onclick="switchTab('timeline')">⏱ ทามไลน์</button>
+        <button class="tab-btn" onclick="switchTab('map')">🗺 แผนที่</button>
+        <button class="tab-btn" onclick="switchTab('rules')">📋 กฎ & คูลดาวน์</button>
+    </div>
+
+    <!-- ===== TAB 1: PROFILES ===== -->
+    <div id="tab-profiles" class="section active">
+        <div class="section-title">ผู้ต้องสงสัยทั้งหมด</div>
+
+        <!-- VICTIM -->
+        <div class="victim-banner">
+            <div class="victim-photo">
+                <img src="../picture/โชกุน.jpg" alt="โชกุน" onerror="this.style.display='none'">
+            </div>
+            <div class="victim-info">
+                <h2>☠️ โชกุน (ผู้เสียชีวิต)</h2>
+                <p>ประธานค่าย | พบศพในห้องการเงิน</p>
+            </div>
+        </div>
+
+        <div class="suspect-label">🔴 ผู้ต้องสงสัย 4 คน</div>
+
+        <!-- อิง -->
+        <div class="character-card">
+            <div class="card-top">
+                <div class="card-photo">
+                    <img src="../picture/อิง.jpg" alt="อิง" onerror="this.style.background='#f1f5f9'">
+                </div>
+                <div class="card-info">
+                    <div class="card-name">พี่อิง</div>
+                    <div class="card-role">หัวหน้าฝ่ายสวัสดิการ</div>
+                </div>
+            </div>
+            <div class="card-bio">
+                พี่อิงเป็นหัวหน้าฝ่ายสวัสดิการของค่าย เป็นคนมีน้ำใจและคอยช่วยเหลือพี่โชอยู่เบื้องหลังเสมอ
+                เจ้าระเบียบเรื่องการเงินเป็นพิเศษ ชอบสวมใส่ที่คาดผมเป็นประจำเพราะรำคาญกับผมที่ยาวตลอดเวลา
+                เป็นโรคนอนไม่หลับ ทำให้มักตื่นมาทำงานตั้งแต่ดึกดื่น มีปัญหาเรื่องงบประมาณฝ่ายสวัสดิการที่สะสมมาตลอดค่าย
+            </div>
+        </div>
+
+        <!-- พีช -->
+        <div class="character-card">
+            <div class="card-top">
+                <div class="card-photo">
+                    <img src="../picture/พีช.jpg" alt="พีช" onerror="this.style.background='#f1f5f9'">
+                </div>
+                <div class="card-info">
+                    <div class="card-name">พี่พีช</div>
+                    <div class="card-role">ทีมงานค่ายสานฝัน</div>
+                </div>
+            </div>
+            <div class="card-bio">
+                พี่พีชเป็นคนที่ทำอะไรจะนึกถึงเพื่อนๆ ก่อนเสมอ ดูเผินๆ เป็นคนเงียบๆ ชอบเก็บความรู้สึกและปัญหาต่างๆ
+                ไว้คนเดียว แต่ในใจลึกๆ นั้น หากมีโอกาสที่ดีก็จะไม่ปล่อยให้พลาดเด็ดขาด เป็นโรคภูมิแพ้
+                และมีสไตล์การแต่งตัวที่ชื่นชอบเครื่องประดับแวววาวเป็นพิเศษ
+                มักมีความคิดเห็นที่แตกต่างในเรื่องการบริหารค่าย
+            </div>
+        </div>
+
+        <!-- ปังปอน -->
+        <div class="character-card">
+            <div class="card-top">
+                <div class="card-photo">
+                    <img src="../picture/ปังปอนด์.jpg" alt="ปังปอน" onerror="this.style.background='#f1f5f9'">
+                </div>
+                <div class="card-info">
+                    <div class="card-name">ปังปอน</div>
+                    <div class="card-role">ทีมงานค่ายสานฝัน</div>
+                </div>
+            </div>
+            <div class="card-bio">
+                ปังปอนเป็นคนพูดจาตรงๆ ตามที่คิดโดยไม่อ้อมค้อม ตั้งใจทำงานทุกอย่างให้เสร็จก่อนกำหนดเสมอ
+                เป็นคนเงียบและไม่ชอบสุงสิงกับใคร ชื่นชอบสวมใส่เสื้อกันหนาวเป็นประจำ
+                เป็นโรคไวรัสตับอักเสบที่ต้องดูแลสุขภาพเป็นพิเศษ ทว่าก็ยังทุ่มเทกับงานค่ายอย่างเต็มกำลัง
+            </div>
+        </div>
+
+        <!-- สายน้ำ -->
+        <div class="character-card">
+            <div class="card-top">
+                <div class="card-photo">
+                    <img src="../picture/สายน้ำ.jpg" alt="สายน้ำ" onerror="this.style.background='#f1f5f9'">
+                </div>
+                <div class="card-info">
+                    <div class="card-name">สายน้ำ</div>
+                    <div class="card-role">ทีมงานค่ายสานฝัน</div>
+                </div>
+            </div>
+            <div class="card-bio">
+                สายน้ำเป็นคนเฮฮาและสนุกสนาน แต่เมื่อถึงเวลาทำงานก็จะจริงจังและทุ่มเทอย่างเต็มที่เพื่อค่ายสานฝัน
+                เป็นโรคหอบที่ต้องพกยาติดตัวตลอดเวลา มีสไตล์ที่ชื่นชอบรองเท้าประดับตกแต่งอย่างสวยงาม
+                สายน้ำเคยมีปัญหาชู้สาวกับพี่โชโดยพี่โชได้พบรักครั้งใหม่และทื้งให้สายน้ำต้องช้ำใจ
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TAB 2: TIMELINE ===== -->
+    <div id="tab-timeline" class="section">
+        <div class="section-title">ทามไลน์วันเกิดเหตุ</div>
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <div class="timeline-time">18:00 น. — เริ่มพิธีปิดค่าย</div>
+                    <div class="timeline-desc">เริ่มกิจกรรมพิธีปิดค่ายสานฝัน บริเวณหอประชุม พี่โชกุนดูแลงานอยู่</div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <div class="timeline-time">ช่วงเย็น — โชกุนนัดพบใครบางคน</div>
+                    <div class="timeline-desc">พี่โชกุนได้นัดให้ใครบางคนมาพบที่ห้องการเงิน อาคาร 1 ในช่วงเย็นวันนี้...
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <div class="timeline-time">18:20 น. — ไฟดับ</div>
+                    <div class="timeline-desc">ไฟในบริเวณค่ายดับลงกะทันหัน ท่ามกลางความมืดและความวุ่นวาย...</div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-dot death"></div>
+                <div class="timeline-card death-card">
+                    <div class="timeline-time">☠️ 18:25 น. — พบศพ</div>
+                    <div class="timeline-desc">มีคนพบศพพี่โชกุนที่ห้องการเงิน อาคาร 1 ในสภาพที่น่าตกใจ ใครคือฆาตกร?
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TAB 3: MAP ===== -->
+    <div id="tab-map" class="section">
+        <div class="section-title">แผนที่โรงเรียนทุ่งใหญ่วิทยาคม</div>
+        <div class="map-title">จุดที่มีคำใบ้จะแสดงด้วยสีเหลือง</div>
+
+        <div class="map-grid">
+            <!-- Row 1 -->
+            <div class="map-cell clue-spot">หน้าเสาธง</div>
+            <div class="map-cell empty">—</div>
+            <div class="map-cell clue-spot">หอประชุมเก่า</div>
+            <div class="map-cell clue-spot">หอประชุมใหม่<br>(ดอกส้าน)</div>
+
+            <!-- Row 2 -->
+            <div class="map-cell clue-spot">อาคาร 1<br><small>(ห้องการเงิน)</small></div>
+            <div class="map-cell empty">—</div>
+            <div class="map-cell empty">—</div>
+            <div class="map-cell empty">—</div>
+
+            <!-- Row 3 -->
+            <div class="map-cell empty">—</div>
+            <div class="map-cell empty">—</div>
+            <div class="map-cell clue-spot">ลานสุขอารมณ์<br>(สานสุขาราม)</div>
+            <div class="map-cell empty">—</div>
+
+            <!-- Row 4 -->
+            <div class="map-cell clue-spot">โรงอาหาร</div>
+            <div class="map-cell empty">—</div>
+            <div class="map-cell">อาคาร 3<br><small>(ห้ามขึ้น!)</small></div>
+            <div class="map-cell empty">—</div>
+
+            <!-- Row 5 -->
+            <div class="map-cell empty">—</div>
+            <div class="map-cell empty">—</div>
+            <div class="map-cell clue-spot">อาคาร 4</div>
+            <div class="map-cell empty">—</div>
+        </div>
+
+        <div class="map-legend">
+            <div class="legend-item">
+                <div class="legend-dot yellow"></div>
+                <span>จุดที่มีคำใบ้ (QR)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TAB 4: RULES ===== -->
+    <div id="tab-rules" class="section">
+        <div class="section-title">กฎและข้อปฏิบัติ</div>
+
+        <div class="rule-group">
+            <div class="rule-group-title">🚫 ข้อห้าม</div>
+            <div class="rule-item forbidden">
+                <span class="rule-icon">🔴</span>
+                <span>ห้ามขึ้น <strong>อาคาร 3</strong> โดยเด็ดขาด</span>
+            </div>
+            <div class="rule-item forbidden">
+                <span class="rule-icon">🔴</span>
+                <span>ห้ามเข้า<strong>ห้องน้ำเพศตรงข้าม</strong></span>
+            </div>
+            <div class="rule-item forbidden">
+                <span class="rule-icon">🔴</span>
+                <span>ห้ามขึ้น<strong>ชั้นบน อาคาร 1</strong> — อาคาร 1
+                    เข้าได้เฉพาะ<strong>ห้องการเงิน</strong>เท่านั้น</span>
+            </div>
+        </div>
+
+        <div class="rule-group">
+            <div class="rule-group-title">📍 สถานที่ที่มีคำใบ้</div>
+            <div class="rule-item info">
+                <span class="rule-icon">🔵</span>
+                <span>หน้าเสาธง</span>
+            </div>
+            <div class="rule-item info">
+                <span class="rule-icon">🔵</span>
+                <span>โรงอาหาร</span>
+            </div>
+            <div class="rule-item info">
+                <span class="rule-icon">🔵</span>
+                <span>หอประชุมเก่า</span>
+            </div>
+            <div class="rule-item info">
+                <span class="rule-icon">🔵</span>
+                <span>อาคาร 4</span>
+            </div>
+            <div class="rule-item info">
+                <span class="rule-icon">🔵</span>
+                <span>อาคาร 1 — ห้องการเงิน</span>
+            </div>
+            <div class="rule-item info">
+                <span class="rule-icon">🔵</span>
+                <span>หอประชุมใหม่ (ดอกส้าน)</span>
+            </div>
+            <div class="rule-item info">
+                <span class="rule-icon">🔵</span>
+                <span>ลานสานสุขาราม</span>
+            </div>
+        </div>
+
+        <div class="rule-group">
+            <div class="rule-group-title">⏱ ระบบคูลดาวน์</div>
+            <div class="rule-item warn">
+                <span class="rule-icon">⚠️</span>
+                <span>หากตอบคำถามผิด จะต้องรอ <strong>30 วินาที</strong> ก่อนตอบใหม่</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(name) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+
+</body>
+
+</html>
