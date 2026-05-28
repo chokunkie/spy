@@ -67,68 +67,75 @@
         /* Print Styles to print cards cleanly - one card per page */
         @media print {
             body { 
-                background: white; 
-                padding: 0; 
-                margin: 0;
+                background: white !important; 
+                padding: 0 !important; 
+                margin: 0 !important;
             }
             .header, .btn-print-box { 
                 display: none !important; 
             }
             .qr-grid { 
                 display: block !important; 
+                background: white !important;
             }
             .qr-card { 
-                page-break-inside: avoid; 
-                page-break-after: always; /* Enforce page break after each card */
-                break-after: page;        /* Modern standard for page breaks */
-                border: none !important;  /* Remove card border */
-                background: none !important; /* Strip backgrounds */
+                page-break-inside: avoid !important; 
+                page-break-after: always !important; /* Enforce page break after each card */
+                break-after: page !important;        /* Modern standard for page breaks */
+                border: none !important;  
+                background: none !important; 
                 box-shadow: none !important;
                 margin: 0 auto !important;
-                padding: 0 !important; 
+                padding-top: 80px !important; /* Elegant spacing from top without height: 100vh */
                 width: 100% !important;
                 max-width: 100% !important;
-                height: 100vh !important; /* Take full height of print area */
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: center !important;
-                align-items: center !important;
+                text-align: center !important;
+                display: block !important; /* Safe standard layout to prevent browser printing engine freeze */
             }
             
             .qr-id {
-                font-size: 54px !important; /* Massive font for printing */
+                font-size: 54px !important; 
+                font-weight: 800 !important;
                 margin-bottom: 20px !important;
+                color: #0A2463 !important;
             }
             
             .qr-card > div:nth-child(2) {
-                font-size: 32px !important; /* Massive subtitle for printing */
-                margin-bottom: 30px !important;
+                font-size: 28px !important; 
+                margin-bottom: 40px !important;
+                color: #475569 !important;
             }
             
             .qr-canvas-holder {
-                border: none !important; /* Remove QR frame border */
+                border: none !important; 
                 padding: 0 !important;
-                margin-bottom: 30px !important;
+                margin: 0 auto 40px !important;
+                display: block !important;
+                width: 380px !important; /* Safe, large print size */
+                height: 380px !important;
             }
             
-            /* Enlarge the actual QR image dynamically during printing */
-            .qr-canvas-holder img {
-                width: 480px !important;
-                height: 480px !important;
+            /* Enlarge the actual QR image cleanly */
+            .qr-canvas-holder img, .qr-canvas-holder canvas {
+                width: 380px !important;
+                height: 380px !important;
+                margin: 0 auto !important;
+                display: block !important;
             }
             
             .qr-hash {
-                font-size: 18px !important; /* Larger text under QR */
+                font-size: 16px !important; 
                 background: none !important;
                 border: none !important;
                 padding: 0 !important;
                 color: #64748b !important;
+                display: block !important;
+                margin-top: 20px !important;
             }
             
-            /* Remove extra margin on the very last card to prevent blank page */
             .qr-card:last-child {
-                page-break-after: avoid;
-                break-after: avoid;
+                page-break-after: avoid !important;
+                break-after: avoid !important;
                 margin-bottom: 0 !important;
             }
         }
