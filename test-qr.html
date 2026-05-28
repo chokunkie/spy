@@ -145,7 +145,7 @@
 
 <div class="container">
     <div class="header">
-        <h1>🕵️ แผ่นป้าย QR Code กิจกรรมไขคดี (17 จุด)</h1>
+        <h1>🕵️ แผ่นป้าย QR Code กิจกรรมไขคดี (17 จุด + แฟ้มคดี)</h1>
         <p>สามารถสแกนทดสอบหน้างาน หรือกดสั่งพิมพ์ (Ctrl+P) เพื่อนำไปแปะตามจุดต่าง ๆ ในพื้นที่จัดกิจกรรมได้ทันที</p>
         <div class="btn-print-box" style="margin-top:20px;">
             <button onclick="window.print()" style="background:var(--accent-yellow); color:var(--ink-blue); border:3px solid var(--ink-blue); padding:10px 24px; border-radius:12px; font-family:'Mitr',sans-serif; font-weight:700; font-size:16px; cursor:pointer; box-shadow:4px 4px 0 var(--ink-blue);">
@@ -193,6 +193,30 @@
         } catch(e) {
             document.getElementById(`qr-holder-${hash}`).textContent = "Error generating QR";
         }
+    }
+
+    // Add Case File Card at the end
+    const caseFileCard = document.createElement('div');
+    caseFileCard.className = 'qr-card';
+    const caseFileURL = "https://spy-jade.vercel.app/casefile.html";
+    caseFileCard.innerHTML = `
+        <div class="qr-id">แฟ้มคดี</div>
+        <div style="font-size: 15px; font-weight:600; color:#475569;">หน้าสรุปและตรวจสอบแฟ้มคดี (Case File)</div>
+        <div class="qr-canvas-holder" id="qr-holder-casefile"></div>
+        <div class="qr-hash">${caseFileURL}</div>
+    `;
+    qrList.appendChild(caseFileCard);
+    try {
+        new QRCode(document.getElementById(`qr-holder-casefile`), {
+            text: caseFileURL,
+            width: 180,
+            height: 180,
+            colorDark: '#0A2463',
+            colorLight: '#FFFFFF',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+    } catch(e) {
+        document.getElementById(`qr-holder-casefile`).textContent = "Error generating QR";
     }
 </script>
 
