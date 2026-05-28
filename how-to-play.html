@@ -273,15 +273,10 @@
             z-index: 9999; /* Over absolutely everything */
             pointer-events: all; /* Intercept clicks initially */
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
             
-            /* Modern CSS masking for the single transparent spotlight circle */
-            mask-image: radial-gradient(circle at var(--mask-x, 50%) var(--mask-y, 50%), transparent var(--mask-size, 100px), #000 calc(var(--mask-size, 100px) + 1px));
-            -webkit-mask-image: radial-gradient(circle at var(--mask-x, 50%) var(--mask-y, 50%), transparent var(--mask-size, 100px), #000 calc(var(--mask-size, 100px) + 1px));
+            /* Modern CSS masking - starts at 0px so it's 100% solid black */
+            mask-image: radial-gradient(circle at var(--mask-x, 50%) var(--mask-y, 50%), transparent var(--mask-size, 0px), #000 calc(var(--mask-size, 0px) + 1px));
+            -webkit-mask-image: radial-gradient(circle at var(--mask-x, 50%) var(--mask-y, 50%), transparent var(--mask-size, 0px), #000 calc(var(--mask-size, 0px) + 1px));
             mask-repeat: no-repeat;
             -webkit-mask-repeat: no-repeat;
         }
@@ -290,25 +285,6 @@
             pointer-events: none;
             /* Apply our keyframe animation only when clicked */
             animation: spotlightRevealSequence 3.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
-        }
-
-        .start-prompt {
-            transition: opacity 0.4s ease, transform 0.4s ease;
-            font-family: 'Mitr', sans-serif;
-            z-index: 10000;
-            pointer-events: none; /* Let click pass to parent overlay */
-            animation: pulsePrompt 2s ease-in-out infinite;
-        }
-
-        .spotlight-mask-overlay.reveal .start-prompt {
-            opacity: 0;
-            transform: scale(0.9);
-            visibility: hidden;
-        }
-
-        @keyframes pulsePrompt {
-            0%, 100% { transform: scale(1); opacity: 0.95; }
-            50% { transform: scale(1.03); opacity: 0.6; }
         }
 
         @keyframes spotlightRevealSequence {
@@ -376,7 +352,7 @@
         @property --mask-size {
             syntax: '<length>';
             inherits: false;
-            initial-value: 100px;
+            initial-value: 0px;
         }
 
         /* ========== SLIDE 1: INTRO (CLASSIC CREAM LOOK REDESIGNED) ========== */
@@ -1180,13 +1156,7 @@
 <body>
 
     <!-- ===== PITCH BLACK SPOTLIGHT REVEAL OVERLAY ===== -->
-    <div class="spotlight-mask-overlay" id="spotlightOverlay" onclick="startSpotlightReveal()">
-        <div class="start-prompt" id="startPrompt">
-            <div style="font-size: 64px; margin-bottom: 16px; filter: drop-shadow(0 0 12px rgba(255,255,255,0.4));">🕵️</div>
-            <div style="font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 2px;">แตะหน้าจอเพื่อเริ่มภารกิจ</div>
-            <div style="font-size: 14px; color: #64748b; margin-top: 6px; font-weight: 400; letter-spacing: 1px;">TAP TO START MISSION</div>
-        </div>
-    </div>
+    <div class="spotlight-mask-overlay" id="spotlightOverlay" onclick="startSpotlightReveal()"></div>
 
     <!-- ===== PROGRESS BAR ===== -->
     <div class="progress-bar-track">
