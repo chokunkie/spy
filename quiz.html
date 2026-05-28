@@ -268,13 +268,27 @@
         }
 
         if (allCorrect) {
+            const clueHtml = data.clue ? `
+                <div style="background: white; border: 3px solid var(--ink-blue); border-radius: 18px; padding: 24px; box-shadow: 4px 4px 0 var(--ink-blue); margin-top: 20px; text-align: left;">
+                    <h3 style="color: var(--accent-red); font-size: 20px; font-weight: bold; margin-bottom: 12px; border-bottom: 2px dashed var(--ink-blue); padding-bottom: 8px;">
+                        📂 หลักฐานที่ค้นพบ: ${data.clue.title || 'คำใบ้ลับ'}
+                    </h3>
+                    <div style="font-family: 'Mitr', sans-serif; font-size: 16px; line-height: 1.6; color: var(--ink-blue);">
+                        ${data.clue.desc || data.clue}
+                    </div>
+                </div>
+            ` : `<p style="color:#64748b; font-size:16px;">จุดสแกนนี้ได้รับการยืนยันความถูกต้องแล้ว!</p>`;
+
             document.getElementById('main-container').innerHTML = `
-                <div class="quiz-card doodle-card" style="text-align: center; padding: 60px 20px;">
-                    <h2 style="color:var(--accent-green); font-size:36px; margin-bottom:20px;">รหัสถูกต้อง!</h2>
-                    <p style="font-family:'Mitr', sans-serif; font-size:18px; color:var(--ink-blue); margin-bottom:30px;">
-                        ระบบยืนยันตัวตนสำเร็จ! คุณสามารถเปิดดูข้อมูลลับได้แล้ว
+                <div class="quiz-card doodle-card" style="text-align: center; padding: 40px 20px; max-width: 100%;">
+                    <h2 style="color:var(--accent-green); font-size:32px; margin-bottom:16px;">ไขรหัสสำเร็จ!</h2>
+                    <p style="font-family:'Mitr', sans-serif; font-size:18px; color:var(--ink-blue); margin-bottom:20px;">
+                        ยืนยันตัวตนสำเร็จ! คุณได้ตรวจสอบข้อมูลหลักฐานประจำจุด <strong>${data.title}</strong> แล้ว
                     </p>
-                    <a href="casefile.html?qr=${new URLSearchParams(window.location.search).get('qr')}" class="btn btn-submit" style="display:inline-block; text-decoration:none; width:100%; box-sizing:border-box;">📂 เปิดแฟ้มคดีลับ</a>
+                    
+                    ${clueHtml}
+
+                    <a href="index.html" class="btn btn-submit" style="display:inline-block; text-decoration:none; width:100%; box-sizing:border-box; margin-top: 24px; background: var(--ink-blue); box-shadow: 4px 4px 0 var(--ink-blue);">⬅️ กลับหน้าหลักพอร์ทัล</a>
                 </div>
             `;
         } else {

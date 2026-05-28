@@ -33,7 +33,7 @@ const qrData = {
         ],
         clue: {
             title: "รอยลากปริศนา", desc: `<div style="text-align:center; margin-top:10px;">
-    <img src="../picture/qr2.png" alt="รอยลากปริศนา" style="max-width:100%; border-radius:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 2px solid #cbd5e1;">
+    <img src="./picture/qr2.png" alt="รอยลากปริศนา" style="max-width:100%; border-radius:8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: 2px solid #cbd5e1;">
     <p style="margin-top:15px; font-size:16px; color:#334155; font-weight:500;">รอยลากปริศนากำลังมุ่งหน้าไปยังอาคาร 1</p>
 </div>` }
     },

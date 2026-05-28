@@ -27,19 +27,14 @@
             display: flex;
             background: white;
             border-bottom: var(--border-width) solid var(--ink-blue);
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .tab-bar::-webkit-scrollbar {
-            display: none;
+            width: 100%;
         }
 
         .tab-btn {
-            flex-shrink: 0;
-            padding: 14px 20px;
+            flex: 1; /* Distribute equal space to all 4 tabs to prevent horizontal scroll */
+            padding: 12px 6px; /* Optimized padding */
             font-family: 'Mitr', sans-serif;
-            font-size: 14px;
+            font-size: 13px; /* Slightly smaller for mobile-first fit */
             font-weight: 600;
             color: #64748b;
             background: none;
@@ -49,7 +44,12 @@
             border-radius: 0;
             cursor: pointer;
             transition: all 0.2s;
-            white-space: nowrap;
+            text-align: center;
+            display: flex;
+            flex-direction: column; /* Icon above text on mobile */
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
         }
 
         .tab-btn:hover {
@@ -59,10 +59,21 @@
         .tab-btn.active {
             color: var(--ink-blue);
             border-bottom-color: var(--accent-red);
+            background: #fff8f8;
         }
 
         .tab-btn:active {
             transform: none;
+        }
+
+        /* Adjust tabs for slightly larger mobile displays to look premium */
+        @media (min-width: 480px) {
+            .tab-btn {
+                font-size: 14px;
+                flex-direction: row; /* Horizontal style for tablets/desktops */
+                gap: 6px;
+                padding: 14px 12px;
+            }
         }
 
         /* ========= SECTIONS ========= */
@@ -405,10 +416,10 @@
     </div>
 
     <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('profiles')">👤 ประวัติผู้ต้องสงสัย</button>
-        <button class="tab-btn" onclick="switchTab('timeline')">⏱ ทามไลน์</button>
-        <button class="tab-btn" onclick="switchTab('map')">🗺 แผนที่</button>
-        <button class="tab-btn" onclick="switchTab('rules')">📋 กฎ & คูลดาวน์</button>
+        <button class="tab-btn active" onclick="switchTab('profiles')"><span>👤</span><span>ประวัติ</span></button>
+        <button class="tab-btn" onclick="switchTab('timeline')"><span>⏱</span><span>ทามไลน์</span></button>
+        <button class="tab-btn" onclick="switchTab('map')"><span>🗺</span><span>แผนที่</span></button>
+        <button class="tab-btn" onclick="switchTab('rules')"><span>📋</span><span>กฎ & คูลดาวน์</span></button>
     </div>
 
     <!-- ===== TAB 1: PROFILES ===== -->
