@@ -115,8 +115,13 @@
                 height: 380px !important;
             }
             
+            /* Hide the canvas to prevent double rendering/stretching in print */
+            .qr-canvas-holder canvas {
+                display: none !important;
+            }
+            
             /* Enlarge the actual QR image cleanly */
-            .qr-canvas-holder img, .qr-canvas-holder canvas {
+            .qr-canvas-holder img {
                 width: 380px !important;
                 height: 380px !important;
                 margin: 0 auto !important;
